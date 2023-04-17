@@ -1,0 +1,45 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/General/Field": "Field2d"
+    },
+    "windows": {
+      "/Shuffleboard/General/Field": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        "Drivetrain": {
+          "Field": {
+            "open": false
+          },
+          "Front Left Module": {
+            "open": false
+          },
+          "open": false
+        },
+        "General": {
+          "Field": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "open": true
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Connections": {
+      "open": true
+    }
+  }
+}
