@@ -10,10 +10,12 @@ import java.util.function.Supplier;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.MotorFeedbackSensor;
+import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.lib.encoders.SmartEncoder;
 import frc.lib.encoders.SmartSparkIntegratedEncoder;
 /** 
@@ -46,6 +48,10 @@ public class MotorGroupSpark extends CANSparkMax implements MotorGroup {
         configureAllControllers();
         getEncoder().setVelocityConversionFactor(1/60);
         this.gearbox = gearbox;
+        if (RobotBase.isSimulation())
+        {
+            REVPhysicsSim.getInstance().addSparkMax(this, getGearbox());
+        }
     }
     public double getEncoderRotations() {
         return invertCoefficient * getEncoder().getPosition();
