@@ -27,14 +27,15 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
         private final double kMotorGearRatio, kEncoderGearRatio, kWeight, kInitialLength, kEncoderSyncMaxSpeed;
         private final Rotation2d kMinAngle, kMaxAngle, kTolerance, kOffset;
         private final boolean kSupportsSmartPosition, linkExternalEncoderToInternalEncoder, 
-            syncExternalEncoderToIntegradeEncoderRegularly, syncExternalEncoderToIntegradeEncoderOnStartup;
+            syncExternalEncoderToIntegradeEncoderRegularly, syncExternalEncoderToIntegradeEncoderOnStartup,
+            enableContinuousInput;
         private final Translation3d kFulcrumOffset;
         private final Rotation3d kRotation;
         public RotatingArmJointConfiguration(double kMotorGearRatio, double kEncoderGearRatio, double kFeedforward, double kWeight,
             double kInitialLength, Rotation2d kMinAngle, Rotation2d kMaxAngle, Rotation2d kTolerance, Rotation2d kOffset,
             boolean kSupportsSmartPosition, boolean linkExternalEncoderToInternalEncoder, 
             boolean syncExternalEncoderToIntegradeEncoderRegularly, boolean syncExternalEncoderToIntegradeEncoderOnStartup,
-            double kEncoderSyncMaxSpeed, Translation3d kFulcrumOffset, Rotation3d kRotation)
+            double kEncoderSyncMaxSpeed, Translation3d kFulcrumOffset, Rotation3d kRotation, boolean enableContinuousInput)
         {
             this.kMotorGearRatio = kMotorGearRatio;
             this.kEncoderGearRatio = kEncoderGearRatio;
@@ -51,6 +52,7 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
             this.kEncoderSyncMaxSpeed = kEncoderSyncMaxSpeed;
             this.kFulcrumOffset = kFulcrumOffset;
             this.kRotation = kRotation;
+            this.enableContinuousInput = enableContinuousInput;
         }
     }
     public static final class RotatingArmJointState implements ArmJointState
@@ -89,6 +91,10 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
                 motorGroup.linkEncoder(encoder);
             } catch (MotorEncoderMismatchException e) {
                 e.printStackTrace();
+            }
+            if (config.enableContinuousInput)
+            {
+                motorGroup.enableContinuousInput(true);
             }
         }
         else if (config.syncExternalEncoderToIntegradeEncoderOnStartup)
