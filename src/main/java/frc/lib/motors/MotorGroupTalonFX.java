@@ -242,6 +242,7 @@ public class MotorGroupTalonFX extends WPI_TalonFX implements MotorGroup {
         if (SmartTalonFXIntegratedEncoder.class.isAssignableFrom(encoder.getClass()))
         {
             configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+            COUNTS_PER_REVOLUTION = 2048;
         }
         else if (CANCoder.class.isAssignableFrom(encoder.getClass()))
         {
