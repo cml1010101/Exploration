@@ -73,7 +73,7 @@ public class SwervyContainer extends RobotContainer {
             public static final double kTrackLength = 0.581025;
             public static final boolean kUseSmartControl = true;
             public static final boolean kSyncIntegratedWithAbsoluteOnStartup = true;
-            public static final boolean kSyncIntegratedWithAbsoluteRegularly = false;
+            public static final boolean kSyncIntegratedWithAbsoluteRegularly = true;
             public static final TalonFXConfiguration kDriveMotorConfiguration = new TalonFXConfiguration();
             static
             {
