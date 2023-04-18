@@ -73,6 +73,7 @@ public class SwerveModule implements Sendable {
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("Angle", () -> MathUtil.inputModulus(getAngle().getDegrees(), 0, 360), null);
         builder.addDoubleProperty("Absolute Angle", () -> MathUtil.inputModulus(rotateEncoder.getAbsoluteEncoderRotations() * 360, 0, 360), null);
+        builder.addDoubleProperty("Velocity (m/s)", () -> drive.getEncoderRPS() * config.kDriveDistancePerRevolution, null);
     }
     /**
      * Gets the position of the swerve module
