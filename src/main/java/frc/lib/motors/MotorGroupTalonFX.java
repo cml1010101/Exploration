@@ -20,6 +20,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.encoders.SmartEncoder;
+import frc.lib.encoders.SmartTalonFXIntegratedEncoder;
 
 
 /** 
@@ -246,5 +247,9 @@ public class MotorGroupTalonFX extends WPI_TalonFX implements MotorGroup {
         {
             throw new MotorEncoderMismatchException(getClass(), encoder.getClass());
         }
+    }
+    @Override
+    public SmartEncoder getIntegratedEncoder() {
+        return new SmartTalonFXIntegratedEncoder(getTalonFXSensorCollection(), this, simData);
     }
 }

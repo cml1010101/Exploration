@@ -122,4 +122,9 @@ public interface MotorGroup extends MotorController {
      * @param encoder the encoder
      */
     public void linkEncoder(SmartEncoder encoder) throws MotorEncoderMismatchException;
+    /**
+     * Returns a new encoder that uses the integrated position.
+     * @return
+     */
+    public SmartEncoder getIntegratedEncoder();
 }

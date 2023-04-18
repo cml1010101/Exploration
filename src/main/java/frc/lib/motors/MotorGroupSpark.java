@@ -15,6 +15,7 @@ import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.lib.encoders.SmartEncoder;
+import frc.lib.encoders.SmartSparkIntegratedEncoder;
 /** 
  * Group of Sparks to be used like MotorController Class
 */
@@ -182,5 +183,9 @@ public class MotorGroupSpark extends CANSparkMax implements MotorGroup {
         {
             throw new MotorEncoderMismatchException(getClass(), encoder.getClass());
         }
+    }
+    @Override
+    public SmartEncoder getIntegratedEncoder() {
+        return new SmartSparkIntegratedEncoder(getEncoder());
     }
 }

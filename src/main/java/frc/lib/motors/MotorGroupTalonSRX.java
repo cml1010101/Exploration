@@ -272,4 +272,8 @@ public class MotorGroupTalonSRX extends WPI_TalonSRX implements MotorGroup {
             throw new MotorEncoderMismatchException(getClass(), encoder.getClass());
         }
     }
+    @Override
+    public SmartEncoder getIntegratedEncoder() {
+        return null;
+    }
 }
