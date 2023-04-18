@@ -1,16 +1,13 @@
 package frc.robot.robots;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import frc.lib.motors.MotorGroupTalonFX;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPoint;
-
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,7 +21,6 @@ import frc.lib.subsystems.drive.SwerveDrive;
 import frc.lib.subsystems.drive.SwerveDrive.SwerveDriveConfiguration;
 import frc.lib.subsystems.drive.swerve.SwerveModule;
 import frc.lib.subsystems.drive.swerve.SwerveModule.SwerveModuleConfiguration;
-import frc.robot.ChargedUp;
 
 public class SwervyContainer extends RobotContainer {
     public static class RobotMap
@@ -167,15 +163,6 @@ public class SwervyContainer extends RobotContainer {
     {
     }
     @Override
-    public Command getAutonomousCommand()
-    {
-        return drive.getFollowPathCommand(PathPlanner.generatePath(
-            new PathConstraints(3.0, 3.0),
-            new PathPoint(new Translation2d(5, 5), Rotation2d.fromDegrees(90)),
-            new PathPoint(new Translation2d(2, 2), Rotation2d.fromDegrees(180))
-        )).andThen(drive.getDriveToPointCommand(new Pose2d(ChargedUp.RED_GAME_PIECE_AUTO_LOCATIONS[0].toTranslation2d(), Rotation2d.fromDegrees(0))));
-    }
-    @Override
     public List<SmartSubsystem> getAllSubsystems()
     {
         return List.of(drive);
@@ -191,5 +178,19 @@ public class SwervyContainer extends RobotContainer {
     @Override
     public void pollCamerasPeriodic()
     {
+    }
+    @Override
+    public Map<String, Pair<Command, Pose2d>> getAutonomousOptions() {
+        return null;
+    }
+    @Override
+    public void loadStartingPosition(Pose2d selected) {
+        drive.resetPosition(selected);
+        drive.resetHeading(selected.getRotation());
+    }
+    @Override
+    public Pair<String, Pair<Command, Pose2d>> getDefaultOption()
+    {
+        return new Pair<>("Do Nothing", new Pair<>(null, new Pose2d()));
     }
 }

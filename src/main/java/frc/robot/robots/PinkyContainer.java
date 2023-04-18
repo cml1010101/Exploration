@@ -1,12 +1,14 @@
 package frc.robot.robots;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.gyros.NavX;
 import frc.lib.motors.MotorGroupTalonFX;
 import frc.lib.oi.OI;
@@ -133,11 +135,6 @@ public class PinkyContainer extends RobotContainer {
     {
     }
     @Override
-    public Command getAutonomousCommand()
-    {
-        return new InstantCommand();
-    }
-    @Override
     public List<SmartSubsystem> getAllSubsystems()
     {
         return List.of(drive);
@@ -153,5 +150,21 @@ public class PinkyContainer extends RobotContainer {
     @Override
     public void pollCamerasPeriodic()
     {
+    }
+    @Override
+    public Map<String, Pair<Command, Pose2d>> getAutonomousOptions() {
+        return Map.of(
+            "Do Nothing", new Pair<>(null, new Pose2d())
+        );
+    }
+    @Override
+    public void loadStartingPosition(Pose2d selected) {
+        drive.resetPosition(selected);
+        drive.resetHeading(selected.getRotation());
+    }
+    @Override
+    public Pair<String, Pair<Command, Pose2d>> getDefaultOption()
+    {
+        return new Pair<>("Do Nothing", new Pair<>(null, new Pose2d()));
     }
 }
