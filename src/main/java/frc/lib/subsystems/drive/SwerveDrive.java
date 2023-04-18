@@ -144,15 +144,15 @@ public class SwerveDrive extends Drive {
                 .withPosition(0, 0)
                 .withSize(2, 2)
                 .withWidget(BuiltInWidgets.kGyro);
-            this.tab.addNumber("Front Right", () -> this.modules[0].getAngle().getDegrees())
+            this.tab.addNumber("Front Right", () -> this.modules[1].getAngle().getDegrees())
                 .withPosition(2, 0)
                 .withSize(2, 2)
                 .withWidget(BuiltInWidgets.kGyro);
-            this.tab.addNumber("Back Left", () -> this.modules[0].getAngle().getDegrees())
+            this.tab.addNumber("Back Left", () -> this.modules[2].getAngle().getDegrees())
                 .withPosition(4, 0)
                 .withSize(2, 2)
                 .withWidget(BuiltInWidgets.kGyro);
-            this.tab.addNumber("Back Right", () -> this.modules[0].getAngle().getDegrees())
+            this.tab.addNumber("Back Right", () -> this.modules[3].getAngle().getDegrees())
                 .withPosition(6, 0)
                 .withSize(2, 2)
                 .withWidget(BuiltInWidgets.kGyro);
