@@ -2,6 +2,7 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/General/Autonomous Chooser": "String Chooser",
       "/Shuffleboard/General/Field": "Field2d"
     },
     "windows": {
@@ -28,6 +29,9 @@
           "Field": {
             "open": true
           },
+          "open": true
+        },
+        "SwerveDrive": {
           "open": true
         },
         "open": true
