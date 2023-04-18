@@ -153,9 +153,7 @@ public class PinkyContainer extends RobotContainer {
     }
     @Override
     public Map<String, Pair<Command, Pose2d>> getAutonomousOptions() {
-        return Map.of(
-            "Do Nothing", new Pair<>(null, new Pose2d())
-        );
+        return Map.of();
     }
     @Override
     public void loadStartingPosition(Pose2d selected) {

@@ -181,7 +181,7 @@ public class SwervyContainer extends RobotContainer {
     }
     @Override
     public Map<String, Pair<Command, Pose2d>> getAutonomousOptions() {
-        return null;
+        return Map.of();
     }
     @Override
     public void loadStartingPosition(Pose2d selected) {
