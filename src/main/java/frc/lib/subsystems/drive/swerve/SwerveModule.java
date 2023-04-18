@@ -10,12 +10,14 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.lib.encoders.SmartAbsoluteEncoder;
 import frc.lib.motors.MotorGroup;
+import frc.lib.motors.MotorGroup.MotorEncoderMismatchException;
 
 public class SwerveModule implements Sendable {
     public static final class SwerveModuleConfiguration
     {
         private final double kDriveGearRatio, kTurnGearRatio, kDriveDistancePerRevolution, kEncoderSyncMaxSpeed;
-        private final boolean kUseSmartControl, kSyncIntegratedWithAbsoluteRegularly, kSyncIntegratedWithAbsoluteOnStartup;
+        private final boolean kUseSmartControl, kSyncIntegratedWithAbsoluteRegularly, kSyncIntegratedWithAbsoluteOnStartup,
+            kLinkAbsoluteEncoderDirectlyToMotor;
         /**
          * Creates a new SwerveModuleConfiguration.
          * @param driveGearRatio the drive gear ratio
@@ -28,14 +30,15 @@ public class SwerveModule implements Sendable {
          * @param syncIntegratedWithAbsoluteOnStartup whether to sync on startup.
          */
         public SwerveModuleConfiguration(double driveGearRatio, double turnGearRatio, double wheelDiameter,
-            double encoderSyncMaxSpeed, boolean useSmartControl, boolean syncIntegratedWithAbsoluteRegularly,
-            boolean syncIntegratedWithAbsoluteOnStartup)
+            double encoderSyncMaxSpeed, boolean useSmartControl, boolean linkAbsoluteEncoderDirectlyToMotor,
+            boolean syncIntegratedWithAbsoluteRegularly, boolean syncIntegratedWithAbsoluteOnStartup)
         {
             this.kDriveGearRatio = driveGearRatio;
             this.kTurnGearRatio = turnGearRatio;
             this.kDriveDistancePerRevolution = wheelDiameter * Math.PI / driveGearRatio;
             this.kEncoderSyncMaxSpeed = encoderSyncMaxSpeed;
             this.kUseSmartControl = useSmartControl;
+            this.kLinkAbsoluteEncoderDirectlyToMotor = linkAbsoluteEncoderDirectlyToMotor;
             this.kSyncIntegratedWithAbsoluteOnStartup = syncIntegratedWithAbsoluteOnStartup;
             this.kSyncIntegratedWithAbsoluteRegularly = syncIntegratedWithAbsoluteRegularly;
         }
@@ -67,7 +70,16 @@ public class SwerveModule implements Sendable {
             driveSim = null;
             turnSim = null;
         }
-        if (config.kSyncIntegratedWithAbsoluteOnStartup) syncIntegratedWithAbsolute();
+        if (config.kLinkAbsoluteEncoderDirectlyToMotor)
+        {
+            try {
+                turn.linkEncoder(encoder);
+            } catch (MotorEncoderMismatchException e) {
+                e.printStackTrace();
+            }
+            turn.enableContinuousInput(true);
+        }
+        else if (config.kSyncIntegratedWithAbsoluteOnStartup) syncIntegratedWithAbsolute();
     }
     @Override
     public void initSendable(SendableBuilder builder) {
@@ -142,7 +154,7 @@ public class SwerveModule implements Sendable {
     public void update() {
         if (Math.abs(turn.getEncoderRPS() / config.kTurnGearRatio) < config.kEncoderSyncMaxSpeed)
         {
-            if (config.kSyncIntegratedWithAbsoluteRegularly) syncIntegratedWithAbsolute();
+            if (config.kSyncIntegratedWithAbsoluteRegularly && !config.kLinkAbsoluteEncoderDirectlyToMotor) syncIntegratedWithAbsolute();
         }
     }
     /**

@@ -263,7 +263,7 @@ public class MotorGroupTalonSRX extends WPI_TalonSRX implements MotorGroup {
     @Override
     public void linkEncoder(SmartEncoder encoder) throws MotorEncoderMismatchException
     {
-        if (encoder.getClass().isAssignableFrom(CANCoder.class))
+        if (CANCoder.class.isAssignableFrom(encoder.getClass()))
         {
             linkAndUseCANCoder((CANCoder)encoder);
         }
@@ -275,5 +275,9 @@ public class MotorGroupTalonSRX extends WPI_TalonSRX implements MotorGroup {
     @Override
     public SmartEncoder getIntegratedEncoder() {
         return null;
+    }
+    @Override
+    public void enableContinuousInput(boolean enable) {
+        configFeedbackNotContinuous(!enable, 0);
     }
 }

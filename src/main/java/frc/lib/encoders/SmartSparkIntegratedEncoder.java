@@ -35,4 +35,8 @@ public class SmartSparkIntegratedEncoder implements SmartEncoder {
     public boolean isOnRoborio() {
         return false;
     }
+    public RelativeEncoder getEncoder()
+    {
+        return encoder;
+    }
 }

@@ -127,4 +127,9 @@ public interface MotorGroup extends MotorController {
      * @return
      */
     public SmartEncoder getIntegratedEncoder();
+    /**
+     * Changes that status of continuous input. This helps when you link an absolute encoder to a motor.
+     * @param enable whether to enable continuous input or not
+     */
+    public void enableContinuousInput(boolean enable);
 }

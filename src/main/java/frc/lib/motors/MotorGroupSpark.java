@@ -181,7 +181,11 @@ public class MotorGroupSpark extends CANSparkMax implements MotorGroup {
     @Override
     public void linkEncoder(SmartEncoder encoder) throws MotorEncoderMismatchException
     {
-        if (encoder.getClass().isAssignableFrom(MotorFeedbackSensor.class))
+        if (SmartSparkIntegratedEncoder.class.isAssignableFrom(encoder.getClass()))
+        {
+            setFeedbackSensor(((SmartSparkIntegratedEncoder)encoder).getEncoder());
+        }
+        if (MotorFeedbackSensor.class.isAssignableFrom(encoder.getClass()))
         {
             setFeedbackSensor((MotorFeedbackSensor)encoder);
         }
@@ -193,5 +197,9 @@ public class MotorGroupSpark extends CANSparkMax implements MotorGroup {
     @Override
     public SmartEncoder getIntegratedEncoder() {
         return new SmartSparkIntegratedEncoder(getEncoder());
+    }
+    @Override
+    public void enableContinuousInput(boolean enable) {
+        getPIDController().setPositionPIDWrappingEnabled(enable);
     }
 }

@@ -68,8 +68,9 @@ public class SwervyContainer extends RobotContainer {
             public static final double kTrackWidth = 0.581025;
             public static final double kTrackLength = 0.581025;
             public static final boolean kUseSmartControl = true;
-            public static final boolean kSyncIntegratedWithAbsoluteOnStartup = true;
-            public static final boolean kSyncIntegratedWithAbsoluteRegularly = true;
+            public static final boolean kSyncIntegratedWithAbsoluteOnStartup = false;
+            public static final boolean kSyncIntegratedWithAbsoluteRegularly = false;
+            public static final boolean kLinkAbsoluteEncoderDirectlyToMotor = true;
             public static final TalonFXConfiguration kDriveMotorConfiguration = new TalonFXConfiguration();
             static
             {
@@ -106,7 +107,8 @@ public class SwervyContainer extends RobotContainer {
             public static final double kEncoderSyncMaxSpeed = 0.1;
             public static final SwerveModuleConfiguration kSwerveModuleConfiguration
                 = new SwerveModuleConfiguration(kDriveGearRatio, kAngularGearRatio, kWheelDiameter, kEncoderSyncMaxSpeed,
-                    kUseSmartControl, kSyncIntegratedWithAbsoluteRegularly, kSyncIntegratedWithAbsoluteOnStartup);
+                    kUseSmartControl, kLinkAbsoluteEncoderDirectlyToMotor, kSyncIntegratedWithAbsoluteRegularly,
+                    kSyncIntegratedWithAbsoluteOnStartup);
             public static final SwerveDriveConfiguration kSwerveDriveConfiguration = new SwerveDriveConfiguration(
                 kMaxSpeed,
                 kMaxAccel,
