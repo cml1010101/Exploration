@@ -132,7 +132,7 @@ public class SwerveModule implements Sendable {
         double deltaDrive = driveSim.getAngularVelocityRPM() * config.kDriveGearRatio / 60 * 0.02;
         drive.addSimulationPosition(deltaDrive);
         turn.addSimulationPosition(deltaTurn);
-        rotateEncoder.addSimulationRotations(deltaTurn);
+        rotateEncoder.addSimulationRotations(turnSim.getAngularVelocityRPM() / 60 * 0.02);
     }
     /**
      * Checks to see if it can sync the integrated sensor with the absolute encoder. Should be called in SwerveDrive.periodic().
