@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.lib.encoders.SmartEncoder;
+import frc.lib.encoders.SmartSparkAbsoluteEncoder;
 import frc.lib.encoders.SmartSparkIntegratedEncoder;
 /** 
  * Group of Sparks to be used like MotorController Class
@@ -46,7 +47,8 @@ public class MotorGroupSpark extends CANSparkMax implements MotorGroup {
         setFollowers();
         setInverted(false);
         configureAllControllers();
-        getEncoder().setVelocityConversionFactor(1/60);
+        if (type == MotorType.kBrushless)
+            getEncoder().setVelocityConversionFactor(1 / 60);
         this.gearbox = gearbox;
         if (RobotBase.isSimulation())
         {
@@ -189,6 +191,10 @@ public class MotorGroupSpark extends CANSparkMax implements MotorGroup {
         {
             setFeedbackSensor((MotorFeedbackSensor)encoder);
         }
+        if (SmartSparkAbsoluteEncoder.class.isAssignableFrom(encoder.getClass()))
+        {
+            setFeedbackSensor(((SmartSparkAbsoluteEncoder)encoder).getEncoder());
+        }
         else
         {
             throw new MotorEncoderMismatchException(getClass(), encoder.getClass());
@@ -201,5 +207,7 @@ public class MotorGroupSpark extends CANSparkMax implements MotorGroup {
     @Override
     public void enableContinuousInput(boolean enable) {
         getPIDController().setPositionPIDWrappingEnabled(enable);
+        getPIDController().setPositionPIDWrappingMinInput(0);
+        getPIDController().setPositionPIDWrappingMaxInput(1);
     }
 }
