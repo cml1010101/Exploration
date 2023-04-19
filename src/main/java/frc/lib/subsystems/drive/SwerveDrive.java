@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.commands.drive.SmartSwerveControllerComand;
+import frc.lib.commands.drive.SmartSwerveControllerCommand;
 import frc.lib.commands.drive.SwerveDriveMeters;
 import frc.lib.commands.drive.SwerveStop;
 import frc.lib.commands.drive.SwerveToPoint;
@@ -326,7 +326,7 @@ public class SwerveDrive extends Drive {
      */
     @Override
     public Command getFollowPathCommand(PathPlannerTrajectory trajectory) {
-        return new SmartSwerveControllerComand(trajectory, this::getPose, kinematics, controller, this::setSwerveStates, this);
+        return new SmartSwerveControllerCommand(trajectory, this::getPose, kinematics, controller, this::setSwerveStates, this);
     }
     @Override
     public void periodic()
