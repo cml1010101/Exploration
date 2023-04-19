@@ -28,10 +28,21 @@ public class TankWithJoystick extends CommandBase {
     @Override
     public void execute()
     {
-        drive.driveUsingChassisSpeeds(new ChassisSpeeds(
-            driveSuppliers[0].getAsDouble(),
-            0,
-            driveSuppliers[1].getAsDouble()
-        ), true);
+        if (oi.useClosedLoop())
+        {
+            drive.driveUsingChassisSpeeds(new ChassisSpeeds(
+                driveSuppliers[0].getAsDouble() * drive.getMaxSpeed(),
+                0,
+                driveSuppliers[1].getAsDouble() * drive.getMaxSpeed()
+            ), true);
+        }
+        else
+        {
+            drive.driveUsingChassisSpeeds(new ChassisSpeeds(
+                driveSuppliers[0].getAsDouble(),
+                0,
+                driveSuppliers[1].getAsDouble()
+            ), false);
+        }
     }
 }
