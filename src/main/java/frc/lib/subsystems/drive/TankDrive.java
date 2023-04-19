@@ -91,7 +91,7 @@ public class TankDrive extends Drive {
         }
         else
         {
-            simulator = new DifferentialDrivetrainSim(leftSide.getGearbox(), config.gearRatio, 0.15,
+            simulator = new DifferentialDrivetrainSim(leftSide.getGearbox(), config.gearRatio, 7.15,
                 config.robotWeight, config.wheelDiameter / 2, config.trackWidth,
                 VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
         }
