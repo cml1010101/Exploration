@@ -3,7 +3,6 @@ package frc.lib.subsystems.drive;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
@@ -19,7 +18,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.lib.commands.drive.SmartRamseteControllerCommand;
 import frc.lib.commands.drive.TankDriveMeters;
 import frc.lib.commands.drive.TankStop;
 import frc.lib.commands.drive.TankWithJoystick;
@@ -30,10 +29,10 @@ import frc.lib.oi.OI;
 public class TankDrive extends Drive {
     public static final class TankDriveConfiguration
     {
-        private final double kS, kV, kA, wheelCircumference, distancePerRevolution, trackWidth, kB, kZeta, kP, kI, kD, wheelDiameter,
+        private final double kS, kV, kA, wheelCircumference, distancePerRevolution, trackWidth, kB, kZeta, wheelDiameter,
             robotWeight, gearRatio, maxSpeed, maxAccel;
         public TankDriveConfiguration(double kS, double kV, double kA, double wheelDiameter,
-            double gearRatio, double trackWidth, double robotWeight, double kB, double kZeta, double kP, double kI, double kD,
+            double gearRatio, double trackWidth, double robotWeight, double kB, double kZeta,
             double maxSpeed, double maxAccel)
         {
             this.kS = kS;
@@ -45,9 +44,6 @@ public class TankDrive extends Drive {
             this.robotWeight = robotWeight;
             this.kB = kB;
             this.kZeta = kZeta;
-            this.kP = kP;
-            this.kI = kI;
-            this.kD = kD;
             this.trackWidth = trackWidth;
             this.gearRatio = gearRatio;
             this.maxSpeed = maxSpeed;
@@ -64,7 +60,6 @@ public class TankDrive extends Drive {
     private final IMU imu;
     private final DifferentialDrivePoseEstimator poseEstimator;
     private final RamseteController controller;
-    private final PIDController leftController, rightController;
     private final Field2d field = new Field2d();
     private final DifferentialDrivetrainSim simulator;
     /** 
@@ -82,8 +77,6 @@ public class TankDrive extends Drive {
         poseEstimator = new DifferentialDrivePoseEstimator(kinematics, imu.getHeading(), getRightDistance(), getLeftDistance(),
             new Pose2d());
         this.controller = new RamseteController(config.kB, config.kZeta);
-        this.leftController = new PIDController(config.kP, config.kI, config.kD);
-        this.rightController = new PIDController(config.kP, config.kI, config.kD);
         field.setRobotPose(poseEstimator.getEstimatedPosition());
         if (RobotBase.isReal())
         {
@@ -294,8 +287,7 @@ public class TankDrive extends Drive {
     }
     @Override
     public Command getFollowPathCommand(PathPlannerTrajectory trajectory) {
-        return new RamseteCommand(trajectory, this::getPose, controller,
-            feedforward, kinematics, this::getSpeeds, leftController, rightController, this::driveVolts, this);
+        return new SmartRamseteControllerCommand(trajectory, this::getPose, kinematics, controller, (left, right) -> driveUsingSpeeds(new DifferentialDriveWheelSpeeds(left, right)), this);
     }
     @Override
     public void initSendable(SendableBuilder builder)
