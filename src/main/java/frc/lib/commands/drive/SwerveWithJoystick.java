@@ -2,7 +2,10 @@ package frc.lib.commands.drive;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.oi.OI;
 import frc.lib.subsystems.drive.SwerveDrive;
@@ -12,6 +15,7 @@ public class SwerveWithJoystick extends CommandBase {
     private final double maxSpeed;
     private final boolean fieldRelative, useClosedLoop;
     private DoubleSupplier[] driveSuppliers;
+    private Alliance alliance;
     public SwerveWithJoystick(SwerveDrive drive, OI oi, boolean fieldRelative, double maxSpeed)
     {
         addRequirements(drive);
@@ -26,10 +30,16 @@ public class SwerveWithJoystick extends CommandBase {
         this.useClosedLoop = oi.useClosedLoop();
     }
     @Override
+    public void initialize()
+    {
+        alliance = DriverStation.getAlliance();
+    }
+    @Override
     public void execute()
     {
         if (fieldRelative)
         {
+            Rotation2d headingOffset = alliance == Alliance.Red ? Rotation2d.fromDegrees(180) : new Rotation2d();
             drive.driveUsingChassisSpeeds(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
                     new ChassisSpeeds(
@@ -37,7 +47,7 @@ public class SwerveWithJoystick extends CommandBase {
                         driveSuppliers[2].getAsDouble() * maxSpeed, 
                         driveSuppliers[1].getAsDouble() * maxSpeed
                     ),
-                    drive.getHeading()
+                    drive.getHeading().plus(headingOffset)
                 ), useClosedLoop
             );
         }
