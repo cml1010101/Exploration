@@ -18,7 +18,7 @@ public final class ChargedUp {
             "pinky", () -> new PinkyContainer(),
             "swervy", () -> new SwervyContainer()
         ),
-        () -> new PinkyContainer());
+        () -> new SwervyContainer());
     /** 
      * All of these locations are relative to the WPILIB origin of the field, the blue corner.
      * All of the arrays of coordinates begin with the side of the community zones and go to the side of the loading zone.
