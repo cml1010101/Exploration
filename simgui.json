@@ -2,10 +2,22 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Arm/Joint #1": "Subsystem",
+      "/Shuffleboard/Arm/Joint #2": "Subsystem",
+      "/Shuffleboard/Arm/Joint #3": "Subsystem",
+      "/Shuffleboard/Arm/Joint #4": "Subsystem",
+      "/Shuffleboard/Arm/Mechanism View": "Mechanism2d",
+      "/Shuffleboard/General/Arm": "Mechanism2d",
       "/Shuffleboard/General/Autonomous Chooser": "String Chooser",
-      "/Shuffleboard/General/Field": "Field2d"
+      "/Shuffleboard/General/Field": "Field2d",
+      "/SmartDashboard/Auto chooser": "String Chooser"
     },
     "windows": {
+      "/Shuffleboard/Arm/Mechanism View": {
+        "window": {
+          "visible": true
+        }
+      },
       "/Shuffleboard/General/Field": {
         "window": {
           "visible": true

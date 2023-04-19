@@ -14,11 +14,11 @@ import frc.robot.robots.SwervyContainer;
 
 public final class ChargedUp {
     public static final RobotChooser robotChooser = new RobotChooser(
-    Map.of(
-        "pinky", () -> new PinkyContainer(),
-        "swervy", () -> new SwervyContainer()
-    ),
-    () -> new SwervyContainer());
+        Map.of(
+            "pinky", () -> new PinkyContainer(),
+            "swervy", () -> new SwervyContainer()
+        ),
+        () -> new PinkyContainer());
     /** 
      * All of these locations are relative to the WPILIB origin of the field, the blue corner.
      * All of the arrays of coordinates begin with the side of the community zones and go to the side of the loading zone.

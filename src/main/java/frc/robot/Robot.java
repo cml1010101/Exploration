@@ -8,13 +8,13 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.oi.OI;
@@ -38,7 +38,7 @@ public class Robot extends LoggedRobot {
   private OI oi;
   private final double cameraPollTime = 0.04;
   private Notifier notifier;
-  private SendableChooser<Pair<Command, Pose2d>> autoChooser;
+  private LoggedDashboardChooser<Pair<Command, Pose2d>> autoChooser;
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -58,20 +58,23 @@ public class Robot extends LoggedRobot {
     container.initializeDefaultCommands(oi);
     container.bindButtons(oi);
     Shuffleboard.getTab("General").add("Field", container.getDrive().getField());
-    autoChooser = new SendableChooser<>();
+    autoChooser = new LoggedDashboardChooser<>("Auto chooser");
     for (var option : container.getAutonomousOptions().entrySet())
     {
       autoChooser.addOption(option.getKey(), option.getValue());
     }
-    Shuffleboard.getTab("General").add("Autonomous Chooser", autoChooser);
+    Shuffleboard.getTab("General").add("Autonomous Chooser", autoChooser.getSendableChooser());
     notifier = new Notifier(container::pollCamerasPeriodic);
     notifier.startPeriodic(cameraPollTime);
   }
   @Override
   public void endCompetition()
   {
+    if (notifier != null)
+    {
+      notifier.close();
+    }
     super.endCompetition();
-    notifier.close();
   }
   @Override
   public void robotPeriodic() {
@@ -81,8 +84,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    autonomousCommand = autoChooser.getSelected().getFirst();
-    container.loadStartingPosition(autoChooser.getSelected().getSecond());
+    autonomousCommand = autoChooser.get().getFirst();
+    container.loadStartingPosition(autoChooser.get().getSecond());
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
     }

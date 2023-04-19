@@ -4,19 +4,38 @@ import java.util.List;
 import java.util.Map;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.encoders.SmartCANCoder;
+import frc.lib.encoders.SmartSparkAbsoluteEncoder;
 import frc.lib.gyros.NavX;
+import frc.lib.motors.MotorGroupSpark;
 import frc.lib.motors.MotorGroupTalonFX;
 import frc.lib.oi.OI;
 import frc.lib.robots.RobotContainer;
 import frc.lib.subsystems.SmartSubsystem;
+import frc.lib.subsystems.arm.Arm;
+import frc.lib.subsystems.arm.IntakeArmJoint;
+import frc.lib.subsystems.arm.RotatingArmJoint;
+import frc.lib.subsystems.arm.TelescopingArmJoint;
+import frc.lib.subsystems.arm.IntakeArmJoint.IntakeArmJointConfiguration;
+import frc.lib.subsystems.arm.RotatingArmJoint.RotatingArmJointConfiguration;
+import frc.lib.subsystems.arm.TelescopingArmJoint.TelescopingArmJointConfiguration;
 import frc.lib.subsystems.drive.Drive;
 import frc.lib.subsystems.drive.TankDrive;
 import frc.lib.subsystems.drive.TankDrive.TankDriveConfiguration;
+import frc.lib.subsystems.pneumatics.PCM;
+import frc.lib.subsystems.pneumatics.PCM.PCMConfiguration;
 
 public class PinkyContainer extends RobotContainer {
     public static class RobotMap
@@ -28,6 +47,13 @@ public class PinkyContainer extends RobotContainer {
         public static final int SHOULDER_PRIMARY_ID = 5;
         public static final int SHOULDER_SECONDARY_ID = 6;
         public static final int SHOULDER_CANCODER_ID = 13;
+        public static final int INTAKE_ID = 10;
+        public static final int WRIST_ID = 9;
+        public static final int PNEUMATICS_ID = 20;
+        public static class Solenoids
+        {
+            public static final int TELESCOPE_ID = 8;
+        }
     }
     public static class Constants
     {
@@ -106,12 +132,90 @@ public class PinkyContainer extends RobotContainer {
                 kShoulderMotorConfiguration.motionCruiseVelocity = kInitialVelocity;
             }
         }
+        public static class IntakeConstants
+        {
+            public static final Translation3d kFulcrumOffset = new Translation3d(
+                Units.inchesToMeters(10),
+                0,
+                Units.inchesToMeters(1)
+            );
+            public static final IntakeArmJointConfiguration kIntakeArmJointConfiguration = new IntakeArmJointConfiguration(
+                kFulcrumOffset, new Rotation3d(), 20
+            );
+        }
+        public static class WristConstants
+        {
+            public static final Translation3d kFulcrumOffset = new Translation3d(
+                0,
+                Units.inchesToMeters(2),
+                0
+            );
+            public static final RotatingArmJointConfiguration kRotatingArmJointConfiguration = new RotatingArmJointConfiguration(
+                40,
+                1,
+                0,
+                Units.lbsToKilograms(5),
+                Units.inchesToMeters(15),
+                Rotation2d.fromDegrees(-10),
+                Rotation2d.fromDegrees(175),
+                Rotation2d.fromDegrees(10),
+                Rotation2d.fromDegrees(0),
+                false,
+                true,
+                false,
+                false,
+                0,
+                kFulcrumOffset,
+                new Rotation3d(),
+                false,
+                "Wrist"
+            );
+        }
+        public static class Telescope
+        {
+            public static final TelescopingArmJointConfiguration kTelescopingArmJointConfiguration
+                = new TelescopingArmJointConfiguration(Units.inchesToMeters(26), Units.inchesToMeters(40),
+                    1.5, 1.5, new Rotation3d(), new Translation3d(), "Telescoping Joint");
+        }
+        public static class Pneumatics
+        {
+            public static final PCMConfiguration kPCMConfiguration = new PCMConfiguration(
+                PneumaticsModuleType.REVPH, false, 0, 0);
+        }
+        public static class ArmRotate
+        {
+            public static final Translation3d kFulcrumOffset = new Translation3d(
+                Units.inchesToMeters(3), 0, Units.inchesToMeters(26.5));
+            public static final RotatingArmJointConfiguration kRotatingArmJointConfiguration =
+                new RotatingArmJointConfiguration(
+                    2200 / 64,
+                    1,
+                    0,
+                    Units.lbsToKilograms(20),
+                    Units.inchesToMeters(26),
+                    Rotation2d.fromDegrees(-45),
+                    Rotation2d.fromDegrees(197),
+                    Rotation2d.fromDegrees(5),
+                    Rotation2d.fromDegrees(90),
+                    true,
+                    true,
+                    false,
+                    false,
+                    0,
+                    kFulcrumOffset,
+                    new Rotation3d(),
+                    false,
+                    "Arm Rotate"
+                );
+        }
     }
     private final Drive drive;
-    //private final RotatingArmJoint shoulderJoint;
-    //private final TelescopingArmJoint telescopingJoint;
-    //private final RotatingArmJoint wristJoint;
-    //private final IntakeArmJoint intakeJoint;
+    private final PCM pcm;
+    private final RotatingArmJoint shoulderJoint;
+    private final TelescopingArmJoint telescopingJoint;
+    private final RotatingArmJoint wristJoint;
+    private final IntakeArmJoint intakeJoint;
+    private final Arm arm;
     public PinkyContainer()
     {
         MotorGroupTalonFX leftDrive = new MotorGroupTalonFX(Constants.DriveConstants.kDriveMotorConfiguration,
@@ -120,15 +224,29 @@ public class PinkyContainer extends RobotContainer {
             RobotMap.RIGHT_PRIMARY_ID, RobotMap.RIGHT_SECONDARY_ID);
         rightDrive.setInverted(true);
         drive = new TankDrive(leftDrive, rightDrive, new NavX(), Constants.DriveConstants.kDriveConfiguration);
-        //MotorGroupTalonFX shoulderMotor = new MotorGroupTalonFX(Constants.ShoulderConstants.kShoulderMotorConfiguration,
-        //    RobotMap.SHOULDER_PRIMARY_ID, RobotMap.SHOULDER_SECONDARY_ID);
-        /*telescopingJoint = new TelescopingArmJoint(new SmartSingleSolenoid(0, null, 0), null)
+        MotorGroupSpark intakeMotor = new MotorGroupSpark(MotorType.kBrushless, () -> DCMotor.getNeo550(1),
+            RobotMap.INTAKE_ID);
+        intakeJoint = new IntakeArmJoint(intakeMotor, Constants.IntakeConstants.kIntakeArmJointConfiguration);
+        MotorGroupSpark wristMotor = new MotorGroupSpark(MotorType.kBrushed, () -> new DCMotor(12,
+            0.1, 0.1, 0.1, 50, 1),
+            RobotMap.WRIST_ID);
+        wristJoint = new RotatingArmJoint(wristMotor, new SmartSparkAbsoluteEncoder(wristMotor.getAbsoluteEncoder()),
+            Constants.WristConstants.kRotatingArmJointConfiguration);
+        pcm = new PCM(Shuffleboard.getTab("PCM"), RobotMap.PNEUMATICS_ID, Constants.Pneumatics.kPCMConfiguration);
+        telescopingJoint = new TelescopingArmJoint(pcm.getSingleSolenoid(RobotMap.Solenoids.TELESCOPE_ID),
+            Constants.Telescope.kTelescopingArmJointConfiguration);
+        MotorGroupTalonFX shoulderMotor = new MotorGroupTalonFX(Constants.ShoulderConstants.kShoulderMotorConfiguration,
+            RobotMap.SHOULDER_PRIMARY_ID, RobotMap.SHOULDER_SECONDARY_ID);
         shoulderJoint = new RotatingArmJoint(shoulderMotor, new SmartCANCoder(RobotMap.SHOULDER_CANCODER_ID),
-            () -> SingleJointedArmSim.estimateMOI(Math.sqrt(Math.pow(telescopingJoint.getLength(), 2) + Math.pow(wristJoint.getEndPoint().getNorm(), 2) -
-            2 * telescopingJoint.getLength() * wristJoint.getEndPoint().getNorm() * Rotation2d.fromDegrees(180).minus(wristJoint.getAngle()).getCos()),
-            Units.lbsToKilograms(20)),
-            Constants.ShoulderConstants.kShoulderConfiguration
-        );*/
+            Constants.ArmRotate.kRotatingArmJointConfiguration);
+        arm = new Arm(
+            Shuffleboard.getTab("Arm"),
+            shoulderJoint,
+            telescopingJoint,
+            wristJoint,
+            intakeJoint
+        );
+        Shuffleboard.getTab("General").add("Arm", arm.getMechanism());
     }
     @Override
     public void periodic()
