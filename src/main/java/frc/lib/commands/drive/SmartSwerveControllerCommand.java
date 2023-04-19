@@ -11,9 +11,9 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
-public class SmartSwerveControllerComand extends SwerveControllerCommand {
+public class SmartSwerveControllerCommand extends SwerveControllerCommand {
     private final HolonomicDriveController controller;
-    public SmartSwerveControllerComand(Trajectory trajectory, Supplier<Pose2d> pose, SwerveDriveKinematics kinematics,
+    public SmartSwerveControllerCommand(Trajectory trajectory, Supplier<Pose2d> pose, SwerveDriveKinematics kinematics,
         HolonomicDriveController controller, Consumer<SwerveModuleState[]> outputModuleStates,
         Subsystem... requirements)
     {
