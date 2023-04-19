@@ -66,9 +66,6 @@ public class PinkyContainer extends RobotContainer {
             public static final double kTrackWidth = Units.inchesToMeters(22);
             public static final double kB = 3.0;
             public static final double kZeta = 0.7;
-            public static final double kP = 1.0;
-            public static final double kI = 0.0;
-            public static final double kD = 0.0;
             public static final double kGearRatio = 11.38;
             public static final double kWheelDiameter = Units.inchesToMeters(6);
             public static final double kMaxSpeed = 3.0;
@@ -88,9 +85,6 @@ public class PinkyContainer extends RobotContainer {
                 kRobotWeight,
                 kB,
                 kZeta,
-                kP,
-                kI,
-                kD,
                 kMaxSpeed,
                 kMaxAccel
             );
