@@ -10,8 +10,11 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.commands.arm.ArmJointSetAngle;
 import frc.lib.commands.arm.ArmJointWithJoystick;
@@ -31,11 +34,13 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
             enableContinuousInput;
         private final Translation3d kFulcrumOffset;
         private final Rotation3d kRotation;
+        private final String name;
         public RotatingArmJointConfiguration(double kMotorGearRatio, double kEncoderGearRatio, double kFeedforward, double kWeight,
             double kInitialLength, Rotation2d kMinAngle, Rotation2d kMaxAngle, Rotation2d kTolerance, Rotation2d kOffset,
             boolean kSupportsSmartPosition, boolean linkExternalEncoderToInternalEncoder, 
             boolean syncExternalEncoderToIntegradeEncoderRegularly, boolean syncExternalEncoderToIntegradeEncoderOnStartup,
-            double kEncoderSyncMaxSpeed, Translation3d kFulcrumOffset, Rotation3d kRotation, boolean enableContinuousInput)
+            double kEncoderSyncMaxSpeed, Translation3d kFulcrumOffset, Rotation3d kRotation, boolean enableContinuousInput,
+            String name)
         {
             this.kMotorGearRatio = kMotorGearRatio;
             this.kEncoderGearRatio = kEncoderGearRatio;
@@ -53,6 +58,7 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
             this.kFulcrumOffset = kFulcrumOffset;
             this.kRotation = kRotation;
             this.enableContinuousInput = enableContinuousInput;
+            this.name = name;
         }
     }
     public static final class RotatingArmJointState implements ArmJointState
@@ -77,6 +83,7 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
     private final DoubleSupplier moi;
     private double lastRecordedMOI;
     private final LinearSystem<N2, N1, N1> simulationID;
+    private final MechanismLigament2d mech;
     public RotatingArmJoint(MotorGroup motorGroup, SmartEncoder encoder, Function<Rotation2d, Double> feedforward,
         DoubleSupplier moi, RotatingArmJointConfiguration config)
     {
@@ -119,7 +126,7 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
                     lastRecordedMOI = moi.getAsDouble(), config.kMotorGearRatio);
             }
             armSimulator = new SmartSingleJointedArmSim(simulationID, motorGroup.getGearbox(), config.kMotorGearRatio,  
-                config.kInitialLength, config.kMinAngle.getRadians(), config.kMaxAngle.getRadians(), true);
+                config.kInitialLength, config.kMinAngle.getRadians(), config.kMaxAngle.getRadians(), false);
         }
         if (config.kMinAngle != null)
         {
@@ -139,6 +146,7 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
         {
             motorGroup.disableForwardSoftLimit();
         }
+        mech = new MechanismLigament2d(config.name, 0, getAngle().getDegrees());
     }
     public RotatingArmJoint(MotorGroup motorGroup, SmartEncoder encoder, DoubleSupplier moi, RotatingArmJointConfiguration config)
     {
@@ -226,13 +234,28 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
     }
     @Override
     public void setState(ArmJointState state) {
-        assert state.getClass().isAssignableFrom(RotatingArmJointState.class);
+        assert RotatingArmJointState.class.isAssignableFrom(state.getClass());
         setTargetAngle(((RotatingArmJointState)state).targetAngle);
     }
     @Override
     public boolean atState(ArmJointState state) {
-        assert state.getClass().isAssignableFrom(RotatingArmJointState.class);
+        assert RotatingArmJointState.class.isAssignableFrom(state.getClass());
         return Math.abs(((RotatingArmJointState)state).targetAngle.getDegrees() - getAngle().getDegrees())
             <= config.kTolerance.getDegrees();
+    }
+    @Override
+    public void initSendable(SendableBuilder builder)
+    {
+        super.initSendable(builder);
+        builder.addDoubleProperty("Angle", () -> getAngle().getDegrees(), null);
+    }
+    @Override
+    public MechanismObject2d getMechanism() {
+        return mech;
+    }
+    @Override
+    public Translation3d getFulcrumOffset()
+    {
+        return config.kFulcrumOffset;
     }
 }

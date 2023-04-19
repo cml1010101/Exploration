@@ -2,6 +2,9 @@ package frc.lib.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.commands.arm.ArmJointSetSpeed;
 import frc.lib.commands.arm.ArmJointStopSpeed;
@@ -49,7 +52,7 @@ public class IntakeArmJoint extends SmartSubsystem implements ArmJoint {
     }
     @Override
     public void setState(ArmJointState state) {
-        assert state.getClass().isAssignableFrom(IntakeArmJointState.class);
+        assert IntakeArmJointState.class.isAssignableFrom(state.getClass());
         IntakeArmJointState intakeState = (IntakeArmJointState)state;
         if (intakeState.openLoop)
         {
@@ -62,7 +65,7 @@ public class IntakeArmJoint extends SmartSubsystem implements ArmJoint {
     }
     @Override
     public boolean atState(ArmJointState state) {
-        assert state.getClass().isAssignableFrom(IntakeArmJointState.class);
+        assert IntakeArmJointState.class.isAssignableFrom(state.getClass());
         IntakeArmJointState intakeState = (IntakeArmJointState)state;
         return intakeState.openLoop ? group.get() == intakeState.speed
             : Math.abs(group.getEncoderRPS() - intakeState.speed) <= config.closedLoopError;
@@ -85,5 +88,20 @@ public class IntakeArmJoint extends SmartSubsystem implements ArmJoint {
     public Command getSetSpeedCommand(double speed, boolean openLoop)
     {
         return new ArmJointSetSpeed(this, speed, openLoop);
+    }
+    @Override
+    public void initSendable(SendableBuilder builder)
+    {
+        super.initSendable(builder);
+        builder.addDoubleProperty("Speed (RPS)", group::getEncoderRPS, null);
+    }
+    @Override
+    public MechanismObject2d getMechanism() {
+        return new MechanismLigament2d("Intake", 0, 0);
+    }
+    @Override
+    public Translation3d getFulcrumOffset()
+    {
+        return config.kFulcrumOffset;
     }
 }

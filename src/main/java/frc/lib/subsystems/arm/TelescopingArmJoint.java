@@ -2,7 +2,10 @@ package frc.lib.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.commands.arm.ArmJointExtend;
 import frc.lib.commands.arm.ArmJointRetract;
@@ -17,8 +20,9 @@ public class TelescopingArmJoint extends SmartSubsystem implements ArmJoint {
         private final double kRetractedLength, kExtendedLength, kExtensionTime, kRetractionTime;
         private final Rotation3d kRotation;
         private final Translation3d kFulcrumOffset;
+        private final String name;
         public TelescopingArmJointConfiguration(double kRetractedLength, double kExtendedLength, double kExtensionTime,
-            double kRetractionTime, Rotation3d kRotation, Translation3d kFulcrumOffset)
+            double kRetractionTime, Rotation3d kRotation, Translation3d kFulcrumOffset, String name)
         {
             this.kRetractedLength = kRetractedLength;
             this.kExtendedLength = kExtendedLength;
@@ -26,6 +30,7 @@ public class TelescopingArmJoint extends SmartSubsystem implements ArmJoint {
             this.kRetractionTime = kRetractionTime;
             this.kRotation = kRotation;
             this.kFulcrumOffset = kFulcrumOffset;
+            this.name = name;
         }
     }
     public static enum TelescopingArmJointState implements ArmJointState
@@ -41,6 +46,7 @@ public class TelescopingArmJoint extends SmartSubsystem implements ArmJoint {
     private final Timer timer;
     private TelescopingArmJointState state;
     private double waitTime;
+    private final MechanismLigament2d mech;
     public TelescopingArmJoint(SmartSolenoid solenoid, TelescopingArmJointConfiguration config)
     {
         this.solenoid = solenoid;
@@ -48,6 +54,7 @@ public class TelescopingArmJoint extends SmartSubsystem implements ArmJoint {
         this.timer = new Timer();
         this.state = TelescopingArmJointState.kRetracted;
         this.estimatedLength = config.kRetractedLength;
+        this.mech = new MechanismLigament2d(config.name, estimatedLength, 0);
     }
     public double getLength()
     {
@@ -149,13 +156,14 @@ public class TelescopingArmJoint extends SmartSubsystem implements ArmJoint {
         default:
             break;
         }
+        mech.setLength(estimatedLength);
     }
     public TelescopingArmJointState getState() {
         return state;
     }
     @Override
     public void setState(ArmJointState state) {
-        assert state.getClass().isAssignableFrom(TelescopingArmJointState.class);
+        assert TelescopingArmJointState.class.isAssignableFrom(state.getClass());
         switch ((TelescopingArmJointState)state)
         {
         case kExtended:
@@ -170,7 +178,24 @@ public class TelescopingArmJoint extends SmartSubsystem implements ArmJoint {
     }
     @Override
     public boolean atState(ArmJointState state) {
-        assert state.getClass().isAssignableFrom(TelescopingArmJointState.class);
+        assert TelescopingArmJointState.class.isAssignableFrom(state.getClass());
         return (TelescopingArmJointState)state == getState();
+    }
+    @Override
+    public void initSendable(SendableBuilder builder)
+    {
+        super.initSendable(builder);
+        builder.addStringProperty("Current State", () -> getState().toString(), null);
+        builder.addDoubleProperty("Length", () -> getLength(), null);
+    }
+    @Override
+    public MechanismObject2d getMechanism()
+    {
+        return mech;
+    }
+    @Override
+    public Translation3d getFulcrumOffset()
+    {
+        return config.kFulcrumOffset;
     }
 }

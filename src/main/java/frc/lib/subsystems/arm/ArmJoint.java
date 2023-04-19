@@ -2,9 +2,11 @@ package frc.lib.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public interface ArmJoint extends Subsystem {
+public interface ArmJoint extends Subsystem, Sendable {
     public static interface ArmJointState
     {
     }
@@ -27,4 +29,6 @@ public interface ArmJoint extends Subsystem {
     public Rotation3d getRotation();
     public void setState(ArmJointState state);
     public boolean atState(ArmJointState state);
+    public MechanismObject2d getMechanism();
+    public Translation3d getFulcrumOffset();
 }
