@@ -63,6 +63,7 @@ public class Robot extends LoggedRobot {
     {
       autoChooser.addOption(option.getKey(), option.getValue());
     }
+    autoChooser.addDefaultOption(container.getDefaultOption().getFirst(), container.getDefaultOption().getSecond());
     Shuffleboard.getTab("General").add("Autonomous Chooser", autoChooser.getSendableChooser());
     notifier = new Notifier(container::pollCamerasPeriodic);
     notifier.startPeriodic(cameraPollTime);
@@ -84,6 +85,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
+    if (autoChooser.get() == null) return;
     autonomousCommand = autoChooser.get().getFirst();
     container.loadStartingPosition(autoChooser.get().getSecond());
     if (autonomousCommand != null) {
