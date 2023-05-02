@@ -4,24 +4,38 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
+import org.photonvision.SimVisionSystem;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public class PhotonCameraWrapper implements CameraWrapper {
     private final Transform3d transformToCenter;
     private final PhotonPoseEstimator visionEstimator;
     private final PhotonCamera camera;
     private PhotonPipelineResult latestResult;
-    public PhotonCameraWrapper(String name, Transform3d transform, AprilTagFieldLayout layout)
+    private final SimVisionSystem simulation;
+    public PhotonCameraWrapper(String name, Transform3d transform, AprilTagFieldLayout layout, double fov, double ledRange,
+        int cameraResolutionWidth, int cameraResolutionHeight, double minTargetArea)
     {
         camera = new PhotonCamera(name);
         transformToCenter = transform;
         visionEstimator = new PhotonPoseEstimator(layout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP, camera, transform);
         updateLatestResult();
+        if (RobotBase.isSimulation())
+        {
+            simulation = new SimVisionSystem(name, fov, transform, ledRange, cameraResolutionWidth, cameraResolutionHeight,
+                minTargetArea);
+            simulation.addVisionTargets(layout);
+        }
+        else
+        {
+            simulation = null;
+        }
     }
     /**
      * Returns the Transform3d (X,Y,Z comp and Pitch, Roll, Yaw comp)
@@ -48,11 +62,12 @@ public class PhotonCameraWrapper implements CameraWrapper {
     public int getPipelineIndex() {
         return camera.getPipelineIndex();
     }
-
+    /**
+     * Updates the latest camera result
+     */
     public void updateLatestResult() {
         latestResult = camera.getLatestResult();
     }
-
     /**
      * Gets whether a target exists
      * @return whether the camera sees a target
@@ -97,6 +112,10 @@ public class PhotonCameraWrapper implements CameraWrapper {
      */
     public EstimatedRobotPose estimatePose(Pose2d referencePose)
     {
+        if (RobotBase.isSimulation())
+        {
+            simulation.processFrame(referencePose);
+        }
         visionEstimator.setReferencePose(referencePose);
         var results = visionEstimator.update();
         if (results.isPresent()) return results.get();
