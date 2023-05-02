@@ -25,6 +25,7 @@ public interface ArmJoint extends Subsystem, Sendable {
             this.maxRadius = maxRadius;
         }
     }
+    public String getName();
     public Translation3d getEndPoint();
     public Rotation3d getRotation();
     public void setState(ArmJointState state);

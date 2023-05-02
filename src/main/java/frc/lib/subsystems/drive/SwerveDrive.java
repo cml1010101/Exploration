@@ -122,8 +122,9 @@ public class SwerveDrive extends Drive {
      * @param imu the gyroscope to be used
      * @param config the SwerveDriveConfiguration to be used
      */
-    public SwerveDrive(ShuffleboardTab tab, SwerveModule[] modules, IMU imu, SwerveDriveConfiguration config)
+    public SwerveDrive(String name, ShuffleboardTab tab, SwerveModule[] modules, IMU imu, SwerveDriveConfiguration config)
     {
+        super(name);
         this.config = config;
         this.modules = modules;
         this.imu = imu;
@@ -177,9 +178,9 @@ public class SwerveDrive extends Drive {
      * @param imu the gyroscope to be used
      * @param config the SwerveDriveConfiguration to be used
      */
-    public SwerveDrive(SwerveModule[] modules, IMU imu, SwerveDriveConfiguration config)
+    public SwerveDrive(String name, SwerveModule[] modules, IMU imu, SwerveDriveConfiguration config)
     {
-        this(null, modules, imu, config);
+        this(name, null, modules, imu, config);
     }
     /**
      * Gets the speed that the drivetrain is moving at as vx and vy

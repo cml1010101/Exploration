@@ -84,9 +84,10 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
     private double lastRecordedMOI;
     private final LinearSystem<N2, N1, N1> simulationID;
     private final MechanismLigament2d mech;
-    public RotatingArmJoint(MotorGroup motorGroup, SmartEncoder encoder, Function<Rotation2d, Double> feedforward,
+    public RotatingArmJoint(String name, MotorGroup motorGroup, SmartEncoder encoder, Function<Rotation2d, Double> feedforward,
         DoubleSupplier moi, RotatingArmJointConfiguration config)
     {
+        super(name);
         this.motorGroup = motorGroup;
         this.encoder = encoder;
         this.config = config;
@@ -148,18 +149,18 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
         }
         mech = new MechanismLigament2d(config.name, 0, getAngle().getDegrees());
     }
-    public RotatingArmJoint(MotorGroup motorGroup, SmartEncoder encoder, DoubleSupplier moi, RotatingArmJointConfiguration config)
+    public RotatingArmJoint(String name, MotorGroup motorGroup, SmartEncoder encoder, DoubleSupplier moi, RotatingArmJointConfiguration config)
     {
-        this(motorGroup, encoder, null, moi, config);
+        this(name, motorGroup, encoder, null, moi, config);
     }
-    public RotatingArmJoint(MotorGroup motorGroup, SmartEncoder encoder, Function<Rotation2d, Double> feedforward,
+    public RotatingArmJoint(String name, MotorGroup motorGroup, SmartEncoder encoder, Function<Rotation2d, Double> feedforward,
         RotatingArmJointConfiguration config)
     {
-        this(motorGroup, encoder, feedforward, null, config);
+        this(name, motorGroup, encoder, feedforward, null, config);
     }
-    public RotatingArmJoint(MotorGroup motorGroup, SmartEncoder encoder, RotatingArmJointConfiguration config)
+    public RotatingArmJoint(String name, MotorGroup motorGroup, SmartEncoder encoder, RotatingArmJointConfiguration config)
     {
-        this(motorGroup, encoder, null, null, config);
+        this(name, motorGroup, encoder, null, null, config);
     }
     public Rotation2d getAngle()
     {

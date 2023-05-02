@@ -27,8 +27,9 @@ public class PCM extends SmartSubsystem {
     private final PCMConfiguration config;
     private final Compressor compressor;
     private final int id;
-    public PCM(ShuffleboardTab tab, int id, PCMConfiguration config)
+    public PCM(String name, ShuffleboardTab tab, int id, PCMConfiguration config)
     {
+        super(name);
         this.config = config;
         this.compressor = new Compressor(id, config.type);
         if (config.hasAnalogSensor)
@@ -49,9 +50,9 @@ public class PCM extends SmartSubsystem {
             tab.addBoolean("Pressurized? ", () -> !compressor.getPressureSwitchValue());
         }
     }
-    public PCM(int id, PCMConfiguration config)
+    public PCM(String name, int id, PCMConfiguration config)
     {
-        this(null, id, config);
+        this(name, null, id, config);
     }
     public SmartSingleSolenoid getSingleSolenoid(int id)
     {

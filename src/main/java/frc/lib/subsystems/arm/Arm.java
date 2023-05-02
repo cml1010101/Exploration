@@ -105,7 +105,7 @@ public class Arm {
             for (int i = 1; i < joints.size(); i++)
             {
                 currentMech = currentMech.append(
-                    new MechanismLigament2d("Joint " + (i + 1) + Math.random() + " Fulcrum", joints.get(i).getFulcrumOffset().getNorm(),
+                    new MechanismLigament2d(joints.get(i).getName(), joints.get(i).getFulcrumOffset().getNorm(),
                     Math.toDegrees(Math.atan(joints.get(i).getFulcrumOffset().getZ() / joints.get(i).getFulcrumOffset().getY())))
                 );
                 currentMech = currentMech.append(joints.get(i).getMechanism());

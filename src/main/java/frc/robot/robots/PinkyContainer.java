@@ -217,21 +217,21 @@ public class PinkyContainer extends RobotContainer {
         MotorGroupTalonFX rightDrive = new MotorGroupTalonFX(Constants.DriveConstants.kDriveMotorConfiguration,
             RobotMap.RIGHT_PRIMARY_ID, RobotMap.RIGHT_SECONDARY_ID);
         rightDrive.setInverted(true);
-        drive = new TankDrive(leftDrive, rightDrive, new NavX(), Constants.DriveConstants.kDriveConfiguration);
+        drive = new TankDrive("drive", leftDrive, rightDrive, new NavX(), Constants.DriveConstants.kDriveConfiguration);
         MotorGroupSpark intakeMotor = new MotorGroupSpark(MotorType.kBrushless, () -> DCMotor.getNeo550(1),
             RobotMap.INTAKE_ID);
-        intakeJoint = new IntakeArmJoint(intakeMotor, Constants.IntakeConstants.kIntakeArmJointConfiguration);
+        intakeJoint = new IntakeArmJoint("intake", intakeMotor, Constants.IntakeConstants.kIntakeArmJointConfiguration);
         MotorGroupSpark wristMotor = new MotorGroupSpark(MotorType.kBrushed, () -> new DCMotor(12,
             0.1, 0.1, 0.1, 50, 1),
             RobotMap.WRIST_ID);
-        wristJoint = new RotatingArmJoint(wristMotor, new SmartSparkAbsoluteEncoder(wristMotor.getAbsoluteEncoder()),
+        wristJoint = new RotatingArmJoint("wrist", wristMotor, new SmartSparkAbsoluteEncoder(wristMotor.getAbsoluteEncoder()),
             Constants.WristConstants.kRotatingArmJointConfiguration);
-        pcm = new PCM(Shuffleboard.getTab("PCM"), RobotMap.PNEUMATICS_ID, Constants.Pneumatics.kPCMConfiguration);
-        telescopingJoint = new TelescopingArmJoint(pcm.getSingleSolenoid(RobotMap.Solenoids.TELESCOPE_ID),
+        pcm = new PCM("pcm", Shuffleboard.getTab("PCM"), RobotMap.PNEUMATICS_ID, Constants.Pneumatics.kPCMConfiguration);
+        telescopingJoint = new TelescopingArmJoint("telescoping joint", pcm.getSingleSolenoid(RobotMap.Solenoids.TELESCOPE_ID),
             Constants.Telescope.kTelescopingArmJointConfiguration);
         MotorGroupTalonFX shoulderMotor = new MotorGroupTalonFX(Constants.ShoulderConstants.kShoulderMotorConfiguration,
             RobotMap.SHOULDER_PRIMARY_ID, RobotMap.SHOULDER_SECONDARY_ID);
-        shoulderJoint = new RotatingArmJoint(shoulderMotor, new SmartCANCoder(RobotMap.SHOULDER_CANCODER_ID),
+        shoulderJoint = new RotatingArmJoint("shoulder joint", shoulderMotor, new SmartCANCoder(RobotMap.SHOULDER_CANCODER_ID),
             Constants.ArmRotate.kRotatingArmJointConfiguration);
         arm = new Arm(
             Shuffleboard.getTab("Arm"),

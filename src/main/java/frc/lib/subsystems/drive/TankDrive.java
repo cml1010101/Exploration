@@ -65,8 +65,9 @@ public class TankDrive extends Drive {
     /** 
      * Creates a new Drivetrain. 
      */
-    public TankDrive(MotorGroup leftSide, MotorGroup rightSide, IMU imu, TankDriveConfiguration config)
+    public TankDrive(String name, MotorGroup leftSide, MotorGroup rightSide, IMU imu, TankDriveConfiguration config)
     {
+        super(name);
         this.leftSide = leftSide;
         this.rightSide = rightSide;
         this.imu = imu;
