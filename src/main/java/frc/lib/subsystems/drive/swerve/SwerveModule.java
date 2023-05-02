@@ -62,8 +62,8 @@ public class SwerveModule implements Sendable {
         this.config = config;
         if (RobotBase.isSimulation())
         {
-            driveSim = new FlywheelSim(drive.getGearbox(), config.kDriveGearRatio, 0.15);
-            turnSim = new FlywheelSim(turn.getGearbox(), config.kTurnGearRatio, 0.15);
+            driveSim = new FlywheelSim(drive.getGearbox(), config.kDriveGearRatio, 1.2);
+            turnSim = new FlywheelSim(turn.getGearbox(), config.kTurnGearRatio, 1.2);
         }
         else
         {
