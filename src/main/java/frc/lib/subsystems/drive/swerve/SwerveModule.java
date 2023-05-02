@@ -1,5 +1,7 @@
 package frc.lib.subsystems.drive.swerve;
 
+import org.littletonrobotics.junction.AutoLog;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -13,6 +15,17 @@ import frc.lib.motors.MotorGroup;
 import frc.lib.motors.MotorGroup.MotorEncoderMismatchException;
 
 public class SwerveModule implements Sendable {
+    @AutoLog
+    public static class SwerveDriveInputs
+    {
+        public double angleDegrees = 0.0;
+        public double angleDegreesPerSecond = 0.0;
+        public double speedMetersPerSecond = 0.0;
+        public double wheelPosition = 0.0;
+        public double targetSpeed = 0.0;
+        public double targetAngle = 0.0;
+        public boolean isOpenLoopControl = false;
+    }
     public static final class SwerveModuleConfiguration
     {
         private final double kDriveGearRatio, kTurnGearRatio, kDriveDistancePerRevolution, kEncoderSyncMaxSpeed;
@@ -47,6 +60,7 @@ public class SwerveModule implements Sendable {
     private final FlywheelSim driveSim, turnSim;
     private final SwerveModuleConfiguration config;
     private final SmartAbsoluteEncoder rotateEncoder;
+    private final SwerveDriveInputsAutoLogged inputs = new SwerveDriveInputsAutoLogged();
     /**
      * Creates a new SwerveModule.
      * @param drive the motor group responsible for controlling the drive.
@@ -123,13 +137,27 @@ public class SwerveModule implements Sendable {
         {
             drive.set(velocity);
         }
-        if (config.kUseSmartControl)
+        if (config.kLinkAbsoluteEncoderDirectlyToMotor)
         {
-            turn.setSmartPosition(turn.getEncoderRotations() + (deltaAngle.getRotations() * config.kTurnGearRatio));
+            if (config.kUseSmartControl)
+            {
+                turn.setSmartPosition(turn.getEncoderRotations() + deltaAngle.getRotations());
+            }
+            else
+            {
+                turn.setPosition(turn.getEncoderRotations() + deltaAngle.getRotations());
+            }
         }
         else
         {
-            turn.setPosition(turn.getEncoderRotations() + (deltaAngle.getRotations() * config.kTurnGearRatio));
+            if (config.kUseSmartControl)
+            {
+                turn.setSmartPosition(turn.getEncoderRotations() + (deltaAngle.getRotations() * config.kTurnGearRatio));
+            }
+            else
+            {
+                turn.setPosition(turn.getEncoderRotations() + (deltaAngle.getRotations() * config.kTurnGearRatio));
+            }
         }
     }
     /**
@@ -156,13 +184,17 @@ public class SwerveModule implements Sendable {
         {
             if (config.kSyncIntegratedWithAbsoluteRegularly && !config.kLinkAbsoluteEncoderDirectlyToMotor) syncIntegratedWithAbsolute();
         }
+        inputs.angleDegrees = getAngle().getDegrees();
+        inputs.angleDegreesPerSecond = turn.getEncoderRPS() / config.kTurnGearRatio;
     }
     /**
      * Gets the current angle of the swerve module
      * @return rotation2d of module. Does not apply any modulus.
      */
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(turn.getEncoderRotations() / config.kTurnGearRatio);
+        return config.kLinkAbsoluteEncoderDirectlyToMotor ?
+            Rotation2d.fromRotations(turn.getEncoderRotations() / config.kTurnGearRatio)
+            : Rotation2d.fromDegrees(turn.getEncoderRotations());
     }
     /**
      * Syncs the integrated sensor position with the position recoreded by the absolute sensor
