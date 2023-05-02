@@ -161,15 +161,14 @@ public class PinkyContainer extends RobotContainer {
                 0,
                 kFulcrumOffset,
                 new Rotation3d(),
-                false,
-                "Wrist"
+                false
             );
         }
         public static class Telescope
         {
             public static final TelescopingArmJointConfiguration kTelescopingArmJointConfiguration
                 = new TelescopingArmJointConfiguration(Units.inchesToMeters(26), Units.inchesToMeters(40),
-                    1.5, 1.5, new Rotation3d(), new Translation3d(), "Telescoping Joint");
+                    1.5, 1.5, new Rotation3d(), new Translation3d());
         }
         public static class Pneumatics
         {
@@ -198,8 +197,7 @@ public class PinkyContainer extends RobotContainer {
                     0,
                     kFulcrumOffset,
                     new Rotation3d(),
-                    false,
-                    "Arm Rotate"
+                    false
                 );
         }
     }
