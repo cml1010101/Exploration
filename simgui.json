@@ -18,7 +18,17 @@
           "visible": true
         }
       },
+      "/Shuffleboard/General/Arm": {
+        "window": {
+          "visible": true
+        }
+      },
       "/Shuffleboard/General/Field": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Auto chooser": {
         "window": {
           "visible": true
         }
