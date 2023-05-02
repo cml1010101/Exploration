@@ -34,13 +34,11 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
             enableContinuousInput;
         private final Translation3d kFulcrumOffset;
         private final Rotation3d kRotation;
-        private final String name;
         public RotatingArmJointConfiguration(double kMotorGearRatio, double kEncoderGearRatio, double kFeedforward, double kWeight,
             double kInitialLength, Rotation2d kMinAngle, Rotation2d kMaxAngle, Rotation2d kTolerance, Rotation2d kOffset,
             boolean kSupportsSmartPosition, boolean linkExternalEncoderToInternalEncoder, 
             boolean syncExternalEncoderToIntegradeEncoderRegularly, boolean syncExternalEncoderToIntegradeEncoderOnStartup,
-            double kEncoderSyncMaxSpeed, Translation3d kFulcrumOffset, Rotation3d kRotation, boolean enableContinuousInput,
-            String name)
+            double kEncoderSyncMaxSpeed, Translation3d kFulcrumOffset, Rotation3d kRotation, boolean enableContinuousInput)
         {
             this.kMotorGearRatio = kMotorGearRatio;
             this.kEncoderGearRatio = kEncoderGearRatio;
@@ -58,7 +56,6 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
             this.kFulcrumOffset = kFulcrumOffset;
             this.kRotation = kRotation;
             this.enableContinuousInput = enableContinuousInput;
-            this.name = name;
         }
     }
     public static final class RotatingArmJointState implements ArmJointState
@@ -147,7 +144,7 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
         {
             motorGroup.disableForwardSoftLimit();
         }
-        mech = new MechanismLigament2d(config.name, 0, getAngle().getDegrees());
+        mech = new MechanismLigament2d(name, 0, getAngle().getDegrees());
     }
     public RotatingArmJoint(String name, MotorGroup motorGroup, SmartEncoder encoder, DoubleSupplier moi, RotatingArmJointConfiguration config)
     {

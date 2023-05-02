@@ -98,7 +98,7 @@ public class IntakeArmJoint extends SmartSubsystem implements ArmJoint {
     }
     @Override
     public MechanismObject2d getMechanism() {
-        return new MechanismLigament2d("Intake", 0, 0);
+        return new MechanismLigament2d(getName(), 0, 0);
     }
     @Override
     public Translation3d getFulcrumOffset()

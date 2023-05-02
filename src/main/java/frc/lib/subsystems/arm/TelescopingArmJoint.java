@@ -20,9 +20,8 @@ public class TelescopingArmJoint extends SmartSubsystem implements ArmJoint {
         private final double kRetractedLength, kExtendedLength, kExtensionTime, kRetractionTime;
         private final Rotation3d kRotation;
         private final Translation3d kFulcrumOffset;
-        private final String name;
         public TelescopingArmJointConfiguration(double kRetractedLength, double kExtendedLength, double kExtensionTime,
-            double kRetractionTime, Rotation3d kRotation, Translation3d kFulcrumOffset, String name)
+            double kRetractionTime, Rotation3d kRotation, Translation3d kFulcrumOffset)
         {
             this.kRetractedLength = kRetractedLength;
             this.kExtendedLength = kExtendedLength;
@@ -30,7 +29,6 @@ public class TelescopingArmJoint extends SmartSubsystem implements ArmJoint {
             this.kRetractionTime = kRetractionTime;
             this.kRotation = kRotation;
             this.kFulcrumOffset = kFulcrumOffset;
-            this.name = name;
         }
     }
     public static enum TelescopingArmJointState implements ArmJointState
@@ -55,7 +53,7 @@ public class TelescopingArmJoint extends SmartSubsystem implements ArmJoint {
         this.timer = new Timer();
         this.state = TelescopingArmJointState.kRetracted;
         this.estimatedLength = config.kRetractedLength;
-        this.mech = new MechanismLigament2d(config.name, estimatedLength, 0);
+        this.mech = new MechanismLigament2d(name, estimatedLength, 0);
     }
     public double getLength()
     {
