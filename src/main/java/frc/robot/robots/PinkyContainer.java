@@ -249,7 +249,7 @@ public class PinkyContainer extends RobotContainer {
     @Override
     public List<SmartSubsystem> getAllSubsystems()
     {
-        return List.of(drive);
+        return List.of(drive, shoulderJoint, telescopingJoint, wristJoint, intakeJoint);
     }
     @Override
     public Drive getDrive()
@@ -275,6 +275,6 @@ public class PinkyContainer extends RobotContainer {
     @Override
     public Pair<String, Pair<Command, Pose2d>> getDefaultOption()
     {
-        return new Pair<>("Do Nothing", new Pair<>(null, new Pose2d()));
+        return new Pair<>("Do Nothing", new Pair<>(drive.getStopCommand(), new Pose2d()));
     }
 }
