@@ -97,16 +97,19 @@ public class Arm {
     }
     public Mechanism2d getMechanism()
     {
-        Mechanism2d mech = new Mechanism2d(100, 109);
-        var root = mech.getRoot("Arm", joints.get(0).getFulcrumOffset().getX(), joints.get(0).getFulcrumOffset().getY());
-        var currentMech = root.append(joints.get(0).getMechanism());
-        for (int i = 1; i < joints.size(); i++)
+        Mechanism2d mech = new Mechanism2d(10, 10);
+        if (joints.size() > 0)
         {
-            currentMech = currentMech.append(
-                new MechanismLigament2d("Joint " + (i + 1) + Math.random() + " Fulcrum", joints.get(i).getFulcrumOffset().getNorm(),
-                Math.toDegrees(Math.atan(joints.get(i).getFulcrumOffset().getZ() / joints.get(i).getFulcrumOffset().getY())))
-            );
-            currentMech = currentMech.append(joints.get(i).getMechanism());
+            var root = mech.getRoot("Arm", joints.get(0).getFulcrumOffset().getX(), joints.get(0).getFulcrumOffset().getY());
+            var currentMech = root.append(joints.get(0).getMechanism());
+            for (int i = 1; i < joints.size(); i++)
+            {
+                currentMech = currentMech.append(
+                    new MechanismLigament2d("Joint " + (i + 1) + Math.random() + " Fulcrum", joints.get(i).getFulcrumOffset().getNorm(),
+                    Math.toDegrees(Math.atan(joints.get(i).getFulcrumOffset().getZ() / joints.get(i).getFulcrumOffset().getY())))
+                );
+                currentMech = currentMech.append(joints.get(i).getMechanism());
+            }
         }
         return mech;
     }

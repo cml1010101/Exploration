@@ -8,6 +8,7 @@ public class ArmJointStopSpeed extends CommandBase {
     public ArmJointStopSpeed(IntakeArmJoint intake)
     {
         this.intake = intake;
+        addRequirements(intake);
     }
     @Override
     public void initialize()
