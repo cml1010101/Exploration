@@ -6,6 +6,7 @@ public interface IMU {
     public Rotation2d getHeading();
     public Rotation2d getPitchAngle();
     public Rotation2d getRollAngle();
+    public Rotation2d getAngularVelocity();
     public void calibrate();
     public void reset();
     public boolean isCalibrating();

@@ -1,5 +1,8 @@
 package frc.lib.subsystems.drive;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -29,6 +32,12 @@ import frc.lib.oi.OI;
 import frc.lib.subsystems.drive.swerve.SwerveModule;
 
 public class SwerveDrive extends Drive {
+    @AutoLog
+    public static class SwerveDriveInputs
+    {
+        public double gyroAngleDegrees;
+        public double gyroAngleDegreesPerSecond;
+    }
     public static final class SwerveDriveConfiguration
     {
         private final double maxSpeed, linearP, linearI, linearD, angularP, angularI, angularD, maxAngularSpeed, maxAngularAccel,
@@ -115,6 +124,7 @@ public class SwerveDrive extends Drive {
     private final HolonomicDriveController controller;
     private final Field2d field;
     private final ShuffleboardTab tab;
+    private final SwerveDriveInputsAutoLogged inputs = new SwerveDriveInputsAutoLogged();
     /**
      * Creates a new swerve drive
      * @param tab the shuffleboard tab to displays swerve data in
@@ -338,6 +348,12 @@ public class SwerveDrive extends Drive {
         {
             swerveModule.update();
         }
+        inputs.gyroAngleDegrees = imu.getHeading().getDegrees();
+        inputs.gyroAngleDegreesPerSecond = imu.getAngularVelocity().getDegrees();
+        Logger.getInstance().processInputs(getName(), inputs);
+        Logger.getInstance().recordOutput(getName() + "Swerve States", modules[0].getState(),
+            modules[1].getState(), modules[2].getState(), modules[3].getState());
+        Logger.getInstance().recordOutput("Field Position", getPose());
     }
     @Override
     public void simulationPeriodic()

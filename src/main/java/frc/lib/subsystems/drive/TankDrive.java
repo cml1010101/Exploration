@@ -1,5 +1,8 @@
 package frc.lib.subsystems.drive;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.VecBuilder;
@@ -27,6 +30,19 @@ import frc.lib.motors.MotorGroup;
 import frc.lib.oi.OI;
 
 public class TankDrive extends Drive {
+    @AutoLog
+    public static class TankDriveInputs
+    {
+        public double leftSpeedMetersPerSecond = 0.0;
+        public double rightSpeedMetersPerSecond = 0.0;
+        public double leftPositionMeters = 0.0;
+        public double rightPositionMeters = 0.0;
+        public double gyroAngleDegrees = 0.0;
+        public double gyroAngleDegreesPerSecond = 0.0;
+        public boolean isOpenLoopControl = false;
+        public double leftMetersPerSecondTarget = 0.0;
+        public double rightMetersPerSecondTarget = 0.0;
+    }
     public static final class TankDriveConfiguration
     {
         private final double kS, kV, kA, wheelCircumference, distancePerRevolution, trackWidth, kB, kZeta, wheelDiameter,
@@ -62,6 +78,7 @@ public class TankDrive extends Drive {
     private final RamseteController controller;
     private final Field2d field = new Field2d();
     private final DifferentialDrivetrainSim simulator;
+    private final TankDriveInputsAutoLogged inputs = new TankDriveInputsAutoLogged();
     /** 
      * Creates a new Drivetrain. 
      */
@@ -192,13 +209,17 @@ public class TankDrive extends Drive {
      */
     @Override
     public void driveUsingChassisSpeeds(ChassisSpeeds speeds, boolean useClosedLoop) {
+        var wheelSpeeds = kinematics.toWheelSpeeds(speeds);
+        inputs.leftMetersPerSecondTarget = wheelSpeeds.leftMetersPerSecond;
+        inputs.rightMetersPerSecondTarget = wheelSpeeds.rightMetersPerSecond;
         if (useClosedLoop)
         {
-            driveUsingSpeeds(kinematics.toWheelSpeeds(speeds));
+            inputs.isOpenLoopControl = false;
+            driveUsingSpeeds(wheelSpeeds);
         }
         else
         {
-            var wheelSpeeds = kinematics.toWheelSpeeds(speeds);
+            inputs.isOpenLoopControl = true;
             driveVolts(
                 feedforward.calculate(wheelSpeeds.leftMetersPerSecond),
                 feedforward.calculate(wheelSpeeds.rightMetersPerSecond)
@@ -252,6 +273,15 @@ public class TankDrive extends Drive {
     {
         poseEstimator.update(imu.getHeading(), getLeftDistance(), getRightDistance());
         field.setRobotPose(getPose());
+        inputs.leftPositionMeters = getLeftDistance();
+        inputs.rightPositionMeters = getRightDistance();
+        var speeds = getSpeeds();
+        inputs.leftSpeedMetersPerSecond = speeds.leftMetersPerSecond;
+        inputs.rightSpeedMetersPerSecond = speeds.rightMetersPerSecond;
+        inputs.gyroAngleDegrees = getHeading().getDegrees();
+        inputs.gyroAngleDegreesPerSecond = imu.getAngularVelocity().getDegrees();
+        Logger.getInstance().processInputs(getName(), inputs);
+        Logger.getInstance().recordOutput("Field Position", getPose());
     }
     @Override
     public void simulationPeriodic()

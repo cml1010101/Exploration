@@ -17,7 +17,7 @@ import frc.lib.motors.MotorGroup.MotorEncoderMismatchException;
 
 public class SwerveModule implements Sendable {
     @AutoLog
-    public static class SwerveDriveInputs
+    public static class SwerveModuleInputs
     {
         public double angleDegrees = 0.0;
         public double angleDegreesPerSecond = 0.0;
@@ -61,7 +61,7 @@ public class SwerveModule implements Sendable {
     private final FlywheelSim driveSim, turnSim;
     private final SwerveModuleConfiguration config;
     private final SmartAbsoluteEncoder rotateEncoder;
-    private final SwerveDriveInputsAutoLogged inputs = new SwerveDriveInputsAutoLogged();
+    private final SwerveModuleInputsAutoLogged inputs = new SwerveModuleInputsAutoLogged();
     private final String name;
     /**
      * Creates a new SwerveModule.
