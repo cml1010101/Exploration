@@ -133,25 +133,21 @@ public class SwervyContainer extends RobotContainer {
         SwerveModule[] modules = new SwerveModule[]
         {
             new SwerveModule(
-                "Front Left",
                 new MotorGroupTalonFX(Constants.DriveConstants.kDriveMotorConfiguration, RobotMap.LEFT_FORWARD_DRIVE),
                 new MotorGroupTalonFX(Constants.DriveConstants.kTurnMotorConfiguration, RobotMap.RIGHT_FORWARD_TURN),
                 new SmartCANCoder(RobotMap.LEFT_FORWARD_CANCODER), Constants.DriveConstants.kSwerveModuleConfiguration
             ),
             new SwerveModule(
-                "Front Right",
                 new MotorGroupTalonFX(Constants.DriveConstants.kDriveMotorConfiguration, RobotMap.RIGHT_FORWARD_DRIVE),
                 new MotorGroupTalonFX(Constants.DriveConstants.kTurnMotorConfiguration, RobotMap.RIGHT_FORWARD_TURN),
                 new SmartCANCoder(RobotMap.RIGHT_FORWARD_CANCODER), Constants.DriveConstants.kSwerveModuleConfiguration
             ),
             new SwerveModule(
-                "Back Left",
                 new MotorGroupTalonFX(Constants.DriveConstants.kDriveMotorConfiguration, RobotMap.LEFT_BACKWARD_DRIVE),
                 new MotorGroupTalonFX(Constants.DriveConstants.kTurnMotorConfiguration, RobotMap.LEFT_BACKWARD_TURN),
                 new SmartCANCoder(RobotMap.LEFT_BACKWARD_CANCODER), Constants.DriveConstants.kSwerveModuleConfiguration
             ),
             new SwerveModule(
-                "Back Right",
                 new MotorGroupTalonFX(Constants.DriveConstants.kDriveMotorConfiguration, RobotMap.RIGHT_BACKWARD_DRIVE),
                 new MotorGroupTalonFX(Constants.DriveConstants.kTurnMotorConfiguration, RobotMap.RIGHT_BACKWARD_TURN),
                 new SmartCANCoder(RobotMap.RIGHT_BACKWARD_CANCODER), Constants.DriveConstants.kSwerveModuleConfiguration

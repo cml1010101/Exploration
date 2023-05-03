@@ -5,21 +5,13 @@
 package frc.robot;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Scanner;
-
-import org.littletonrobotics.junction.LogFileUtil;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.oi.OI;
@@ -36,14 +28,14 @@ import frc.robot.oi.DefaultOI;
  * build.gradle file in the
  * project.
  */
-public class Robot extends LoggedRobot {
+public class Robot extends TimedRobot {
   private RobotChooser chooser = ChargedUp.robotChooser;
   private RobotContainer container;
   private Command autonomousCommand = null;
   private OI oi;
   private final double cameraPollTime = 0.04;
   private Notifier notifier;
-  private LoggedDashboardChooser<Pair<Command, Pose2d>> autoChooser;
+  private SendableChooser<Pair<Command, Pose2d>> autoChooser;
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -51,60 +43,18 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
-    Logger logger = Logger.getInstance();
-    logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
-    logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-    logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-    logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
-    logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-    switch (BuildConstants.DIRTY) {
-      case 0:
-        logger.recordMetadata("GitDirty", "All changes committed");
-        break;
-      case 1:
-        logger.recordMetadata("GitDirty", "Uncomitted changes");
-        break;
-      default:
-        logger.recordMetadata("GitDirty", "Unknown");
-        break;
-    }
-    if (isReal())
-    {
-      logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
-      logger.addDataReceiver(new NT4Publisher());
-    }
-    else
-    {
-      setUseTiming(false);
-      Scanner scanner = new Scanner(System.in);
-      System.out.print("Do you want to run in simulation mode. Answer 'yes' for simulation and 'no' for replay: ");
-      String response = scanner.next();
-      if (response.equalsIgnoreCase("yes"))
-      {
-        logger.addDataReceiver(new WPILOGWriter("./logs"));
-        logger.addDataReceiver(new NT4Publisher());
-      }
-      else
-      {
-        String logPath = LogFileUtil.findReplayLog();
-        logger.setReplaySource(new WPILOGReader(logPath));
-        logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
-      }
-      scanner.close();
-    }
-    logger.start();
     container = chooser.getRobotContainer();
     loadOI();
     container.initializeDefaultCommands(oi);
     container.bindButtons(oi);
     Shuffleboard.getTab("General").add("Field", container.getDrive().getField());
-    autoChooser = new LoggedDashboardChooser<>("Auto chooser");
+    autoChooser = new SendableChooser<>();
     for (var option : container.getAutonomousOptions().entrySet())
     {
       autoChooser.addOption(option.getKey(), option.getValue());
     }
-    autoChooser.addDefaultOption(container.getDefaultOption().getFirst(), container.getDefaultOption().getSecond());
-    Shuffleboard.getTab("General").add("Autonomous Chooser", autoChooser.getSendableChooser());
+    autoChooser.setDefaultOption(container.getDefaultOption().getFirst(), container.getDefaultOption().getSecond());
+    Shuffleboard.getTab("General").add("Autonomous Chooser", autoChooser);
     notifier = new Notifier(container::pollCamerasPeriodic);
     notifier.startPeriodic(cameraPollTime);
   }
@@ -125,9 +75,9 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    if (autoChooser.get() == null) return;
-    autonomousCommand = autoChooser.get().getFirst();
-    container.loadStartingPosition(autoChooser.get().getSecond());
+    if (autoChooser.getSelected() == null) return;
+    autonomousCommand = autoChooser.getSelected().getFirst();
+    container.loadStartingPosition(autoChooser.getSelected().getSecond());
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
     }

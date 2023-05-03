@@ -1,8 +1,5 @@
 package frc.lib.subsystems.drive.swerve;
 
-import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -16,17 +13,6 @@ import frc.lib.motors.MotorGroup;
 import frc.lib.motors.MotorGroup.MotorEncoderMismatchException;
 
 public class SwerveModule implements Sendable {
-    @AutoLog
-    public static class SwerveModuleInputs
-    {
-        public double angleDegrees = 0.0;
-        public double angleDegreesPerSecond = 0.0;
-        public double speedMetersPerSecond = 0.0;
-        public double wheelPosition = 0.0;
-        public double targetSpeed = 0.0;
-        public double targetAngle = 0.0;
-        public boolean isOpenLoopControl = false;
-    }
     public static final class SwerveModuleConfiguration
     {
         private final double kDriveGearRatio, kTurnGearRatio, kDriveDistancePerRevolution, kEncoderSyncMaxSpeed;
@@ -61,8 +47,6 @@ public class SwerveModule implements Sendable {
     private final FlywheelSim driveSim, turnSim;
     private final SwerveModuleConfiguration config;
     private final SmartAbsoluteEncoder rotateEncoder;
-    private final SwerveModuleInputsAutoLogged inputs = new SwerveModuleInputsAutoLogged();
-    private final String name;
     /**
      * Creates a new SwerveModule.
      * @param drive the motor group responsible for controlling the drive.
@@ -70,9 +54,8 @@ public class SwerveModule implements Sendable {
      * @param encoder the absolute encoder to be used.
      * @param config the configuration of the swerve module.
      */
-    public SwerveModule(String name, MotorGroup drive, MotorGroup turn, SmartAbsoluteEncoder encoder, SwerveModuleConfiguration config)
+    public SwerveModule(MotorGroup drive, MotorGroup turn, SmartAbsoluteEncoder encoder, SwerveModuleConfiguration config)
     {
-        this.name = name;
         this.drive = drive;
         this.turn = turn;
         this.rotateEncoder = encoder;
@@ -124,9 +107,6 @@ public class SwerveModule implements Sendable {
      * @param useClosedLoop whether to use the closed loop control of the motor, or to simply apply voltage
      */
     public void setState(SwerveModuleState state, boolean useClosedLoop) {
-        inputs.isOpenLoopControl = !useClosedLoop;
-        inputs.targetAngle = state.angle.getDegrees();
-        inputs.targetSpeed = state.speedMetersPerSecond;
         double velocity = state.speedMetersPerSecond;
         Rotation2d deltaAngle = state.angle.minus(getAngle());
         deltaAngle = Rotation2d.fromDegrees(MathUtil.inputModulus(deltaAngle.getDegrees(), -180, 180));
@@ -190,13 +170,6 @@ public class SwerveModule implements Sendable {
         {
             if (config.kSyncIntegratedWithAbsoluteRegularly && !config.kLinkAbsoluteEncoderDirectlyToMotor) syncIntegratedWithAbsolute();
         }
-        inputs.angleDegrees = getAngle().getDegrees();
-        inputs.angleDegreesPerSecond = config.kLinkAbsoluteEncoderDirectlyToMotor ?
-            turn.getEncoderRPS() :
-            turn.getEncoderRPS() / config.kTurnGearRatio;
-        inputs.speedMetersPerSecond = drive.getEncoderRPS() * config.kDriveDistancePerRevolution;
-        inputs.wheelPosition = drive.getEncoderRotations() * config.kDriveDistancePerRevolution;
-        Logger.getInstance().processInputs(name, inputs);
     }
     /**
      * Gets the current angle of the swerve module
