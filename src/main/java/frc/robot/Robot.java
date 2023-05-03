@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Scanner;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -75,9 +76,21 @@ public class Robot extends LoggedRobot {
     else
     {
       setUseTiming(false);
-      String logPath = LogFileUtil.findReplayLog();
-      logger.setReplaySource(new WPILOGReader(logPath));
-      logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+      Scanner scanner = new Scanner(System.in);
+      System.out.print("Do you want to run in simulation mode. Answer 'yes' for simulation and 'no' for replay: ");
+      String response = scanner.next();
+      if (response.equalsIgnoreCase("yes"))
+      {
+        logger.addDataReceiver(new WPILOGWriter("./logs"));
+        logger.addDataReceiver(new NT4Publisher());
+      }
+      else
+      {
+        String logPath = LogFileUtil.findReplayLog();
+        logger.setReplaySource(new WPILOGReader(logPath));
+        logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+      }
+      scanner.close();
     }
     logger.start();
     container = chooser.getRobotContainer();
