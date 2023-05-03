@@ -6,9 +6,13 @@ package frc.robot;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -52,6 +56,29 @@ public class Robot extends LoggedRobot {
     logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
     logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    switch (BuildConstants.DIRTY) {
+      case 0:
+        logger.recordMetadata("GitDirty", "All changes committed");
+        break;
+      case 1:
+        logger.recordMetadata("GitDirty", "Uncomitted changes");
+        break;
+      default:
+        logger.recordMetadata("GitDirty", "Unknown");
+        break;
+    }
+    if (isReal())
+    {
+      logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
+      logger.addDataReceiver(new NT4Publisher());
+    }
+    else
+    {
+      setUseTiming(false);
+      String logPath = LogFileUtil.findReplayLog();
+      logger.setReplaySource(new WPILOGReader(logPath));
+      logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+    }
     logger.start();
     container = chooser.getRobotContainer();
     loadOI();
