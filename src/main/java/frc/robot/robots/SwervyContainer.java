@@ -154,7 +154,7 @@ public class SwervyContainer extends RobotContainer {
             )
         };
         drive = new SwerveDrive(
-            "swerve drive",
+            "SweveDrive",
             Shuffleboard.getTab("SwerveDrive"),
             modules,
             new NavX(),
