@@ -241,6 +241,10 @@ public class PinkyContainer extends RobotContainer {
         Shuffleboard.getTab("General").add("Arm", arm.getMechanism());
     }
     @Override
+    public void autonomousPeriodic()
+    {
+    }
+    @Override
     public void periodic()
     {
     }

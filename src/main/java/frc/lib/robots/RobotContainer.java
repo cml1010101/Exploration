@@ -15,6 +15,7 @@ public abstract class RobotContainer {
     {
     }
     public abstract void periodic();
+    public abstract void autonomousPeriodic();
     public abstract Map<String, Pair<Command, Pose2d>> getAutonomousOptions();
     public abstract Pair<String, Pair<Command, Pose2d>> getDefaultOption();
     public abstract List<SmartSubsystem> getAllSubsystems();

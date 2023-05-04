@@ -162,6 +162,10 @@ public class SwervyContainer extends RobotContainer {
         );
     }
     @Override
+    public void autonomousPeriodic()
+    {
+    }
+    @Override
     public void periodic()
     {
     }
