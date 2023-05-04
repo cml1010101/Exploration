@@ -34,7 +34,6 @@ public class Robot extends TimedRobot {
   private Command autonomousCommand = null;
   private OI oi;
   private final double cameraPollTime = 0.04;
-  private Notifier notifier;
   private SendableChooser<Pair<Command, Pose2d>> autoChooser;
   /**
    * This function is run when the robot is first started up and should be used
@@ -55,16 +54,11 @@ public class Robot extends TimedRobot {
     }
     autoChooser.setDefaultOption(container.getDefaultOption().getFirst(), container.getDefaultOption().getSecond());
     Shuffleboard.getTab("General").add("Autonomous Chooser", autoChooser);
-    notifier = new Notifier(container::pollCamerasPeriodic);
-    notifier.startPeriodic(cameraPollTime);
+    addPeriodic(container::pollCamerasPeriodic, cameraPollTime);
   }
   @Override
   public void endCompetition()
   {
-    if (notifier != null)
-    {
-      notifier.close();
-    }
     super.endCompetition();
   }
   @Override
