@@ -124,6 +124,7 @@ public class Robot extends TimedRobot {
     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
       | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
       e.printStackTrace();
+      oi = new DefaultOI();
     }
   }
 }
