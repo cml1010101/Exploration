@@ -49,7 +49,7 @@ public class NavX extends AHRS implements IMU {
     @Override
     public void setSimulationHeading(Rotation2d heading)
     {
-        headingSimulation.set(Math.IEEEremainder(-MathUtil.inputModulus(heading.getDegrees(), -180, 180), 360));
+        headingSimulation.set(-MathUtil.inputModulus(heading.getDegrees(), -180, 180) - getAngleAdjustment());
     }
     @Override
     public Rotation2d getAngularVelocity() {
