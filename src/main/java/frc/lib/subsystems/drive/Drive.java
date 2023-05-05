@@ -5,13 +5,14 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.subsystems.SmartSubsystem;
 
 public abstract class Drive extends SmartSubsystem {
-    public Drive(String name) {
-        super(name);
+    public Drive(ShuffleboardTab tab, String name) {
+        super(tab, name);
     }
     /**
      * Gets the speed that the drivetrain is moving at as vx and vy

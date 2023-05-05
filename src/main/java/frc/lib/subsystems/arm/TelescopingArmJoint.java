@@ -47,7 +47,7 @@ public class TelescopingArmJoint extends SmartSubsystem implements ArmJoint {
     private final MechanismLigament2d mech;
     public TelescopingArmJoint(String name, SmartSolenoid solenoid, TelescopingArmJointConfiguration config)
     {
-        super(name);
+        super(null, name);
         this.solenoid = solenoid;
         this.config = config;
         this.timer = new Timer();

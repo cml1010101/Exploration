@@ -15,6 +15,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -65,9 +66,9 @@ public class TankDrive extends Drive {
     /** 
      * Creates a new Drivetrain. 
      */
-    public TankDrive(String name, MotorGroup leftSide, MotorGroup rightSide, IMU imu, TankDriveConfiguration config)
+    public TankDrive(ShuffleboardTab tab, String name, MotorGroup leftSide, MotorGroup rightSide, IMU imu, TankDriveConfiguration config)
     {
-        super(name);
+        super(tab, name);
         this.leftSide = leftSide;
         this.rightSide = rightSide;
         this.imu = imu;
@@ -89,6 +90,10 @@ public class TankDrive extends Drive {
                 config.robotWeight, config.wheelDiameter / 2, config.trackWidth,
                 VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
         }
+    }
+    public TankDrive(String name, MotorGroup leftSide, MotorGroup rightSide, IMU imu, TankDriveConfiguration config)
+    {
+        this(null, name, leftSide, rightSide, imu, config);
     }
     /**
      * Drives the robot forward applying the speed proportions

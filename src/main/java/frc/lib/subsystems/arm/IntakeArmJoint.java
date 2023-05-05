@@ -39,7 +39,7 @@ public class IntakeArmJoint extends SmartSubsystem implements ArmJoint {
     private final IntakeArmJointConfiguration config;
     public IntakeArmJoint(String name, MotorGroup group, IntakeArmJointConfiguration config)
     {
-        super(name);
+        super(null, name);
         this.group = group;
         this.config = config;
     }

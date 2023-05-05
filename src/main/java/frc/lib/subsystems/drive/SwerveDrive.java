@@ -124,7 +124,7 @@ public class SwerveDrive extends Drive {
      */
     public SwerveDrive(String name, ShuffleboardTab tab, SwerveModule[] modules, IMU imu, SwerveDriveConfiguration config)
     {
-        super(name);
+        super(tab, name);
         this.config = config;
         this.modules = modules;
         this.imu = imu;

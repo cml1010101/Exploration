@@ -12,6 +12,7 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
@@ -81,10 +82,10 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
     private double lastRecordedMOI;
     private final LinearSystem<N2, N1, N1> simulationID;
     private final MechanismLigament2d mech;
-    public RotatingArmJoint(String name, MotorGroup motorGroup, SmartEncoder encoder, Function<Rotation2d, Double> feedforward,
+    public RotatingArmJoint(ShuffleboardTab tab, String name, MotorGroup motorGroup, SmartEncoder encoder, Function<Rotation2d, Double> feedforward,
         DoubleSupplier moi, RotatingArmJointConfiguration config)
     {
-        super(name);
+        super(tab, name);
         this.motorGroup = motorGroup;
         this.encoder = encoder;
         this.config = config;
@@ -145,6 +146,11 @@ public class RotatingArmJoint extends SmartSubsystem implements ArmJoint {
             motorGroup.disableForwardSoftLimit();
         }
         mech = new MechanismLigament2d(name, 0, getAngle().getDegrees());
+    }
+    public RotatingArmJoint(String name, MotorGroup motorGroup, SmartEncoder encoder, Function<Rotation2d, Double> feedforward,
+        DoubleSupplier moi, RotatingArmJointConfiguration config)
+    {
+        this(null, name, motorGroup, encoder, feedforward, moi, config);
     }
     public RotatingArmJoint(String name, MotorGroup motorGroup, SmartEncoder encoder, DoubleSupplier moi, RotatingArmJointConfiguration config)
     {

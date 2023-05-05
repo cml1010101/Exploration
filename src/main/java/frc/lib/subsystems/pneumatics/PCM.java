@@ -29,7 +29,7 @@ public class PCM extends SmartSubsystem {
     private final int id;
     public PCM(String name, ShuffleboardTab tab, int id, PCMConfiguration config)
     {
-        super(name);
+        super(tab, name);
         this.config = config;
         this.compressor = new Compressor(id, config.type);
         if (config.hasAnalogSensor)
