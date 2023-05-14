@@ -8,6 +8,7 @@ import frc.lib.motors.MotorGroupTalonFX;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,12 +16,16 @@ import frc.lib.encoders.SmartCANCoder;
 import frc.lib.gyros.NavX;
 import frc.lib.oi.OI;
 import frc.lib.robots.RobotContainer;
+import frc.lib.ros.Coprocessor;
+import frc.lib.ros.packages.ROSApriltag;
+import frc.lib.ros.packages.ROSOdometry;
 import frc.lib.subsystems.SmartSubsystem;
 import frc.lib.subsystems.drive.Drive;
 import frc.lib.subsystems.drive.SwerveDrive;
 import frc.lib.subsystems.drive.SwerveDrive.SwerveDriveConfiguration;
 import frc.lib.subsystems.drive.swerve.SwerveModule;
 import frc.lib.subsystems.drive.swerve.SwerveModule.SwerveModuleConfiguration;
+import frc.robot.ChargedUp;
 
 public class SwervyContainer extends RobotContainer {
     public static class RobotMap
@@ -127,6 +132,7 @@ public class SwervyContainer extends RobotContainer {
         }
     }
     private final Drive drive;
+    private final Coprocessor coprocessor;
     public SwervyContainer()
     {
         
@@ -160,6 +166,9 @@ public class SwervyContainer extends RobotContainer {
             new NavX(),
             Constants.DriveConstants.kSwerveDriveConfiguration
         );
+        coprocessor = new Coprocessor("Xavier1");
+        coprocessor.registerPackage(new ROSApriltag(drive, coprocessor, ChargedUp.APRILTAG_LAYOUT, new Transform3d()));
+        coprocessor.registerPackage(new ROSOdometry(coprocessor, drive));
     }
     @Override
     public void autonomousPeriodic()
@@ -168,6 +177,7 @@ public class SwervyContainer extends RobotContainer {
     @Override
     public void periodic()
     {
+        coprocessor.update();
     }
     @Override
     public List<SmartSubsystem> getAllSubsystems()
