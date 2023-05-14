@@ -10,6 +10,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -23,6 +24,9 @@ import frc.lib.motors.MotorGroupSpark;
 import frc.lib.motors.MotorGroupTalonFX;
 import frc.lib.oi.OI;
 import frc.lib.robots.RobotContainer;
+import frc.lib.ros.Coprocessor;
+import frc.lib.ros.packages.ROSApriltag;
+import frc.lib.ros.packages.ROSOdometry;
 import frc.lib.subsystems.SmartSubsystem;
 import frc.lib.subsystems.arm.Arm;
 import frc.lib.subsystems.arm.IntakeArmJoint;
@@ -36,6 +40,7 @@ import frc.lib.subsystems.drive.TankDrive;
 import frc.lib.subsystems.drive.TankDrive.TankDriveConfiguration;
 import frc.lib.subsystems.pneumatics.PCM;
 import frc.lib.subsystems.pneumatics.PCM.PCMConfiguration;
+import frc.robot.ChargedUp;
 
 public class PinkyContainer extends RobotContainer {
     public static class RobotMap
@@ -208,6 +213,7 @@ public class PinkyContainer extends RobotContainer {
     private final RotatingArmJoint wristJoint;
     private final IntakeArmJoint intakeJoint;
     private final Arm arm;
+    private final Coprocessor coprocessor;
     public PinkyContainer()
     {
         MotorGroupTalonFX leftDrive = new MotorGroupTalonFX(Constants.DriveConstants.kDriveMotorConfiguration,
@@ -239,6 +245,9 @@ public class PinkyContainer extends RobotContainer {
             intakeJoint
         );
         Shuffleboard.getTab("General").add("Arm", arm.getMechanism());
+        coprocessor = new Coprocessor("Xavier1");
+        coprocessor.registerPackage(new ROSApriltag(drive, coprocessor, ChargedUp.APRILTAG_LAYOUT, new Transform3d()));
+        coprocessor.registerPackage(new ROSOdometry(coprocessor, drive));
     }
     @Override
     public void autonomousPeriodic()
@@ -247,6 +256,7 @@ public class PinkyContainer extends RobotContainer {
     @Override
     public void periodic()
     {
+        coprocessor.update();
     }
     @Override
     public List<SmartSubsystem> getAllSubsystems()
