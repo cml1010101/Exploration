@@ -49,6 +49,16 @@ public interface MotorGroup extends MotorController {
      * Sets the velocity of a motor
      * @param velocity the velocity of the motor in rps
      */
+    public void setVelocity(int slot, double velocity, double feedforward);
+    /**
+     * Sets the position of a motor using closed-loop control
+     * @param position in encoder rotations
+     */
+    public void setPosition(int slot, double position, double feedforward);
+    /**
+     * Sets the velocity of a motor
+     * @param velocity the velocity of the motor in rps
+     */
     public void setVelocity(double velocity);
     /**
      * Sets the position of a motor using closed-loop control

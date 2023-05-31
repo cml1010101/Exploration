@@ -6,14 +6,10 @@ package frc.lib.motors;
 
 import java.util.*;
 
-import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -26,18 +22,16 @@ import frc.lib.encoders.SmartTalonFXIntegratedEncoder;
 /** 
  * Group of Talons to be used like MotorController Class
 */
-public class MotorGroupTalonFX extends WPI_TalonFX implements MotorGroup {
+public class MotorGroupTalonFX extends TalonFX implements MotorGroup {
     public static final TalonFXConfiguration kDefaultConfiguration = new TalonFXConfiguration();
     static
     {
-        kDefaultConfiguration.supplyCurrLimit.enable = true;
-        kDefaultConfiguration.supplyCurrLimit.triggerThresholdTime = 1;
-        kDefaultConfiguration.supplyCurrLimit.triggerThresholdCurrent = 90;
-        kDefaultConfiguration.supplyCurrLimit.currentLimit = 40;
+        kDefaultConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
+        kDefaultConfiguration.CurrentLimits.SupplyTimeThreshold = 1;
+        kDefaultConfiguration.CurrentLimits.SupplyCurrentThreshold = 90;
+        kDefaultConfiguration.CurrentLimits.SupplyCurrentLimit = 40;
     }
-    private List<WPI_TalonFX> followers = new ArrayList<WPI_TalonFX>();
-    private int COUNTS_PER_REVOLUTION = 2048;
-    private TalonFXSimCollection simData;
+    private List<TalonFX> followers = new ArrayList<TalonFX>();
     private int invertCoefficient = 1;
     /**
      * Creates a new motor controlled by a talon
@@ -63,38 +57,33 @@ public class MotorGroupTalonFX extends WPI_TalonFX implements MotorGroup {
     {
         super(primaryID);
         for (int followerID: followerIDs) {
-            this.followers.add(new WPI_TalonFX(followerID));
+            this.followers.add(new TalonFX(followerID));
         }
         setFollowers();
         setInverted(false);
         configureAllControllers(configuration);
-        if (RobotBase.isSimulation())
-        {
-            simData = getSimCollection();
-        }
-    }
-    public void setCountsPerRevolution(int countsPerRevolution)
-    {
-        COUNTS_PER_REVOLUTION = countsPerRevolution;
     }
     public double getEncoderRotations() {
-        return getSelectedSensorPosition() / COUNTS_PER_REVOLUTION;
+        return getPosition().getValue();
     }
     public double getEncoderRPS() {
-        //10 represents the amount of 100ms periods in a single second.
-        return getSelectedSensorVelocity() / COUNTS_PER_REVOLUTION * 10;
+        return getVelocity().getValue();
     }
     /**
      * Sets the position of Falcon motor using integrated PIDControl
      * @param rotations Number of rotations. Does not factor in gear ratio.
      */
-    public void setPosition(double rotations, double feedforward)
+    @Override
+    public void setPosition(int slot, double rotations, double feedforward)
     {
-        set(ControlMode.Position, rotations * COUNTS_PER_REVOLUTION, DemandType.ArbitraryFeedForward, feedforward);
+        PositionVoltage pv = new PositionVoltage(rotations);
+        pv.FeedForward = feedforward;
+        pv.Slot = slot;
     }
+    @Override
     public void setPercent(double percent, double feedforward)
     {
-        set(ControlMode.PercentOutput, percent, DemandType.ArbitraryFeedForward, feedforward);
+        set(percent + feedforward);
     }
     @Override
     public void setInverted(boolean inverted)

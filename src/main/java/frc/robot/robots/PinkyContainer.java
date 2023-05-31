@@ -3,7 +3,7 @@ package frc.robot.robots;
 import java.util.List;
 import java.util.Map;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.Pair;
@@ -96,10 +96,10 @@ public class PinkyContainer extends RobotContainer {
             public static final TalonFXConfiguration kDriveMotorConfiguration = new TalonFXConfiguration();
             static
             {
-                kDriveMotorConfiguration.supplyCurrLimit.currentLimit = 40;
-                kDriveMotorConfiguration.supplyCurrLimit.triggerThresholdCurrent = 90;
-                kDriveMotorConfiguration.supplyCurrLimit.triggerThresholdTime = 1;
-                kDriveMotorConfiguration.slot0.allowableClosedloopError = 0;
+                kDriveMotorConfiguration.CurrentLimits.SupplyCurrentLimit = 40;
+                kDriveMotorConfiguration.CurrentLimits.SupplyCurrentThreshold = 90;
+                kDriveMotorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true
+                kDriveMotorConfiguration.CurrentLimits.SupplyTimeThreshold = 1;
                 kDriveMotorConfiguration.slot0.kP = kDriveP;
                 kDriveMotorConfiguration.slot0.kI = kDriveI;
                 kDriveMotorConfiguration.slot0.kD = kDriveD;
@@ -116,10 +116,10 @@ public class PinkyContainer extends RobotContainer {
             public static final double kI = 0.0;
             public static final double kD = 0.0;
             public static final double kGearRatio = 2200 / 64.0;
-            public static final TalonFXConfiguration kShoulderMotorConfiguration = new TalonFXConfiguration();
+            public static final com.ctre.phoenix6.configs.TalonFXConfiguration kShoulderMotorConfiguration = new TalonFXConfiguration();
             static
             {
-                kShoulderMotorConfiguration.supplyCurrLimit.currentLimit = 40;
+                kShoulderMotorConfiguration..currentLimit = 40;
                 kShoulderMotorConfiguration.supplyCurrLimit.triggerThresholdCurrent = 90;
                 kShoulderMotorConfiguration.supplyCurrLimit.triggerThresholdTime = 1;
                 kShoulderMotorConfiguration.slot0.allowableClosedloopError = 0;
